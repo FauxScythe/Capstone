@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #1a1a1a; -webkit-font-smoothing: antialiased; }
+a { text-decoration: none; color: inherit; }
+
+:root {
+  --red:      #c0392b;
+  --red-dark: #96281b;
+  --gold:     #f0c040;
+  --white:    #ffffff;
+  --off-white:#fdf5f5;
+  --gray-100: #f5f5f5;
+  --gray-200: #e8e8e8;
+  --gray-500: #777;
+  --gray-700: #444;
+  --gray-900: #1a1a1a;
+  --radius:   10px;
+  --shadow:   0 4px 20px rgba(0,0,0,.08);
+}
+
+.reg-header {
+  background: var(--white);
+  border-bottom: 3px solid var(--red);
+  padding: 14px 0;
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+.reg-header-inner {
+  max-width: 900px; margin: 0 auto; padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.reg-brand { display: flex; align-items: center; gap: 12px; }
+.reg-logo  { width: 44px; height: 44px; object-fit: contain; }
+.reg-brand-name { font-size: 1.1rem; font-weight: 900; color: var(--red); }
+.reg-brand-sub  { font-size: 11px; color: var(--gray-500); }
+.reg-login-link { font-size: 13px; color: var(--gray-700); }
+.reg-login-link strong { color: var(--red); }
+.reg-login-link:hover strong { text-decoration: underline; }
+
+.reg-main { max-width: 900px; margin: 36px auto 0; padding: 0 24px 60px; }
+
+.reg-intro { text-align: center; margin-bottom: 28px; }
+.reg-intro h1 { font-size: 1.8rem; font-weight: 900; color: var(--gray-900); margin-bottom: 8px; }
+.reg-intro p  { font-size: 14px; color: var(--gray-500); }
+
+.reg-role-select { margin-bottom: 32px; }
+.reg-role-label  { font-size: 13px; font-weight: 700; color: var(--gray-700); margin-bottom: 12px; text-align: center; }
+.reg-role-cards  { display: flex; gap: 16px; justify-content: center; }
+.reg-role-card {
+  flex: 1; max-width: 260px;
+  background: var(--white); border: 2px solid var(--gray-200);
+  border-radius: 14px; padding: 20px 18px; text-align: center;
+  cursor: pointer; transition: all .2s;
+}
+.reg-role-card:hover { border-color: var(--red); }
+.reg-role-card.active { border-color: var(--red); background: #fff3f3; box-shadow: 0 0 0 3px rgba(192,57,43,.1); }
+.reg-role-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+.reg-role-card strong { display: block; font-size: 14px; font-weight: 800; color: var(--gray-900); margin-bottom: 4px; }
+.reg-role-card p { font-size: 12px; color: var(--gray-500); margin: 0; }
+
+.reg-form { display: none; background: var(--white); border-radius: 16px; padding: 36px; box-shadow: var(--shadow); }
+.reg-form.active { display: block; }
+
+.reg-section-title {
+  font-size: 13px; font-weight: 800; color: var(--red);
+  text-transform: uppercase; letter-spacing: .8px;
+  border-bottom: 2px solid #fde8e8;
+  padding-bottom: 8px; margin: 28px 0 18px;
+}
+.reg-section-title:first-child { margin-top: 0; }
+.optional { font-weight: 400; color: var(--gray-500); text-transform: none; letter-spacing: 0; font-size: 12px; }
+
+.reg-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; }
+.req { color: var(--red); }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%; padding: 10px 14px;
+  border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+  font-size: 14px; font-family: inherit; color: var(--gray-900);
+  background: var(--white); outline: none; transition: border-color .2s;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--red); }
+.form-group textarea { resize: vertical; }
+.field-note { font-size: 11.5px; color: var(--gray-500); margin-top: 5px; display: block; }
+
+.pwd-check-wrap { margin-bottom: 14px; }
+.pwd-check-label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--gray-700); cursor: pointer; }
+.pwd-fields { margin-top: 12px; }
+.hidden { display: none; }
+
+.file-upload-box {
+  border: 2px dashed var(--gray-200); border-radius: var(--radius);
+  padding: 24px; text-align: center; cursor: pointer;
+  position: relative; transition: border-color .2s; background: var(--gray-100);
+}
+.file-upload-box:hover { border-color: var(--red); }
+.file-upload-box span { font-size: 1.8rem; display: block; margin-bottom: 6px; }
+.file-upload-box p { font-size: 13px; color: var(--gray-700); font-weight: 600; margin-bottom: 4px; }
+.file-upload-box small { font-size: 11.5px; color: var(--gray-500); }
+.file-upload-box input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+
+.radio-group { display: flex; gap: 20px; margin-top: 6px; }
+.radio-group label { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--gray-700); cursor: pointer; }
+
+.privacy-check label {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; color: var(--gray-700); cursor: pointer; line-height: 1.6;
+}
+.privacy-check a { color: var(--red); font-weight: 600; }
+.privacy-check a:hover { text-decoration: underline; }
+
+.btn-submit {
+  width: 100%; padding: 14px;
+  background: var(--red); color: var(--white);
+  border: none; border-radius: var(--radius);
+  font-size: 15px; font-weight: 800;
+  cursor: pointer; margin-top: 24px;
+  transition: background .2s;
+}
+.btn-submit:hover { background: var(--red-dark); }
+
+.reg-login-note { text-align: center; font-size: 13px; color: var(--gray-500); margin-top: 16px; }
+.reg-login-note a { color: var(--red); font-weight: 700; }
+.reg-login-note a:hover { text-decoration: underline; }
+
+.reg-footer {
+  background: var(--white); border-top: 1px solid var(--gray-200);
+  padding: 16px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: var(--gray-500);
+  max-width: 100%;
+}
+.reg-footer a { color: var(--red); font-weight: 600; }
+.reg-footer a:hover { text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .reg-grid-2 { grid-template-columns: 1fr; }
+  .reg-role-cards { flex-direction: column; align-items: center; }
+  .reg-form { padding: 24px 18px; }
+  .reg-footer { flex-direction: column; gap: 8px; text-align: center; }
+}
+
+/* ── Password requirements & show toggle ── */
+.pw-reqs { display:flex; flex-direction:column; gap:3px; margin-top:6px; }
+.pw-req  { font-size:11.5px; color:#aaa; transition:color .2s; }
+.pw-req.met { color:#1a7a4a; }
+.pw-req.met::before { content:'✓ '; }
+.show-pw-label { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--gray-500); cursor:pointer; margin-top:8px; }
+.field-error { color:var(--red); font-size:11.5px; margin-top:4px; display:block; }

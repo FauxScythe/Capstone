@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account – SkillBridge AI | PESO Bago City</title>
+  <link rel="stylesheet" href="../assets/css/register.css" />
+</head>
+<body>
+
+  <div class="reg-header">
+    <div class="reg-header-inner">
+      <div class="reg-brand">
+        <img src="logo-peso.png" alt="PESO Logo" class="reg-logo" />
+        <div>
+          <div class="reg-brand-name">SkillBridge AI</div>
+          <div class="reg-brand-sub">PESO Bago City · Inclusive Job Matching Platform</div>
+        </div>
+      </div>
+      <a href="login.html" class="reg-login-link">Already have an account? <strong>Log In</strong></a>
+    </div>
+  </div>
+
+  <div class="reg-main">
+    <div class="reg-container">
+
+      <div class="reg-intro">
+        <h1>Create Your Account</h1>
+        <p>Join SkillBridge AI and connect with inclusive employment opportunities in Bago City.</p>
+      </div>
+
+      <div class="reg-role-select">
+        <p class="reg-role-label">I am registering as:</p>
+        <div class="reg-role-cards">
+          <div class="reg-role-card active" onclick="switchRole('jobseeker', this)">
+            <span class="reg-role-icon">👤</span>
+            <strong>Job Seeker / PWD</strong>
+            <p>Looking for employment opportunities</p>
+          </div>
+          <div class="reg-role-card" onclick="switchRole('employer', this)">
+            <span class="reg-role-icon">🏢</span>
+            <strong>Employer</strong>
+            <p>Posting jobs and hiring candidates</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── EMAIL VERIFICATION STEP ── -->
+      <div id="verification-step" class="reg-verification-step active">
+        <div class="reg-section-title">Verify Your Email or Mobile</div>
+        <p class="reg-verification-desc">Please verify your email address or mobile number before proceeding with registration.</p>
+        
+        <div class="reg-verification-form">
+          <div class="form-group">
+            <label>Email Address or Mobile Number <span class="req">*</span></label>
+            <div class="input-group">
+              <input type="text" id="verify-input" placeholder="you@email.com or 09XXXXXXXXX" required />
+              <button type="button" id="send-code-btn" class="btn-send-code" onclick="sendVerificationCode()">Send Code</button>
+            </div>
+            <small class="field-note">We'll send a 6-digit verification code to verify your identity.</small>
+          </div>
+          
+          <div id="code-input-group" class="form-group" style="display: none;">
+            <label>Verification Code <span class="req">*</span></label>
+            <div class="code-input-container">
+              <input type="text" id="verification-code" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]{6}" />
+              <button type="button" id="verify-code-btn" class="btn-verify-code" onclick="verifyCode()">Verify</button>
+            </div>
+            <small class="field-note">Code expires in 10 minutes. Check your email/SMS for the code.</small>
+          </div>
+          
+          <div id="verification-message" class="form-msg" style="display: none;"></div>
+          
+          <div id="verified-success" class="verified-success" style="display: none;">
+            <span class="success-icon">✅</span>
+            <strong>Verification Successful!</strong>
+            <p>You can now proceed with your registration.</p>
+            <button type="button" class="btn-proceed" onclick="proceedToRegistration()">Continue to Registration</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── JOB SEEKER FORM ── -->
+      <form id="form-jobseeker" class="reg-form" onsubmit="submitForm(event,'jobseeker')" enctype="multipart/form-data">
+        <input type="hidden" name="role" value="jobseeker" />
+
+        <div class="reg-section-title">Personal Information</div>
+        <div class="reg-grid-2">
+          <div class="form-group">
+            <label>First Name <span class="req">*</span></label>
+            <input type="text" name="first_name" placeholder="Juan" required />
+          </div>
+          <div class="form-group">
+            <label>Last Name <span class="req">*</span></label>
+            <input type="text" name="last_name" placeholder="Dela Cruz" required />
+          </div>
+          <div class="form-group">
+            <label>Middle Name</label>
+            <input type="text" name="middle_name" placeholder="Santos" />
+          </div>
+          <div class="form-group">
+            <label>Date of Birth <span class="req">*</span></label>
+            <input type="date" name="dob" id="js-dob" required onchange="updateAge('js-dob','js-age')" />
+          </div>
+          <div class="form-group">
+            <label>Age</label>
+            <input type="text" id="js-age" readonly placeholder="Auto-calculated" />
+          </div>
+          <div class="form-group">
+            <label>Sex <span class="req">*</span></label>
+            <select name="sex" required>
+              <option value="">Select</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Prefer not to say</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Civil Status <span class="req">*</span></label>
+            <select name="civil_status" required>
+              <option value="">Select</option>
+              <option>Single</option>
+              <option>Married</option>
+              <option>Widowed</option>
+              <option>Separated</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Complete Address <span class="req">*</span></label>
+          <div class="addr-grid">
+            <select id="js-region" name="region" required onchange="loadProvinces()">
+              <option value="">Select Region</option>
+            </select>
+            <select id="js-province" name="province" required onchange="loadCities()" disabled>
+              <option value="">Select Province</option>
+            </select>
+            <select id="js-city" name="city" required onchange="loadBarangays()" disabled>
+              <option value="">Select City / Municipality</option>
+            </select>
+            <select id="js-barangay" name="barangay" required onchange="updateAddressHidden()" disabled>
+              <option value="">Select Barangay</option>
+            </select>
+          </div>
+          <input type="hidden" name="address" id="js-address-hidden" />
+          <small class="field-note" id="addr-loading" style="display:none;">Loading...</small>
+        </div>
+
+        <div class="reg-grid-2">
+          <div class="form-group">
+            <label>Mobile Number <span class="req">*</span></label>
+            <input type="tel" name="mobile" placeholder="09XXXXXXXXX" maxlength="11"
+              pattern="^09\d{9}$" title="Must start with 09 and be 11 digits"
+              inputmode="numeric" oninput="validatePhone(this)" required />
+            <small class="field-note">Format: 09XXXXXXXXX</small>
+          </div>
+          <div class="form-group">
+            <label>Email Address <span class="req">*</span></label>
+            <input type="email" name="email" placeholder="you@email.com" oninput="validateEmail(this)" required />
+          </div>
+        </div>
+
+        <div class="reg-section-title">PWD Information <span class="optional">(if applicable)</span></div>
+        <div class="pwd-check-wrap">
+          <label class="pwd-check-label">
+            <input type="checkbox" id="is-pwd" name="is_pwd" onchange="togglePWD()" />
+            I am a Person with Disability (PWD)
+          </label>
+        </div>
+        <div id="pwd-fields" class="pwd-fields hidden">
+          <div class="reg-grid-2">
+            <div class="form-group">
+              <label>Type of Disability</label>
+              <select name="disability_type">
+                <option value="">Select</option>
+                <option>Visual Impairment</option>
+                <option>Hearing Impairment</option>
+                <option>Physical / Mobility</option>
+                <option>Intellectual / Learning</option>
+                <option>Psychosocial</option>
+                <option>Others</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>PWD ID Number</label>
+              <input type="text" name="pwd_id" placeholder="PWD-XXXX-XXXX" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Accessibility Needs / Accommodations</label>
+            <textarea name="accessibility" rows="2" placeholder="e.g. Sign language interpreter, wheelchair access..."></textarea>
+          </div>
+        </div>
+
+        <div class="reg-section-title">Educational Background</div>
+        <div class="reg-grid-2">
+          <div class="form-group">
+            <label>Highest Educational Attainment <span class="req">*</span></label>
+            <select name="education" required>
+              <option value="">Select</option>
+              <option>Elementary Graduate</option>
+              <option>High School Graduate</option>
+              <option>Senior High School Graduate</option>
+              <option>Vocational / Technical Graduate</option>
+              <option>College Undergraduate</option>
+              <option>College Graduate</option>
+              <option>Post Graduate</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Course / Strand</label>
+            <input type="text" name="course" placeholder="e.g. BS Information Systems" />
+          </div>
+        </div>
+
+        <div class="reg-section-title">Skills &amp; Work Experience</div>
+        <div class="form-group">
+          <label>Key Skills <span class="req">*</span></label>
+          <input type="text" name="skills" placeholder="e.g. Computer Literacy, Carpentry, Customer Service" required />
+        </div>
+        <div class="form-group">
+          <label>Work Experience <span class="optional">(most recent)</span></label>
+          <textarea name="experience" rows="3" placeholder="Job Title – Company Name – Duration&#10;e.g. Sales Associate – ABC Store – 2022 to 2024"></textarea>
+        </div>
+
+        <div class="reg-section-title">ID Verification</div>
+        <div class="form-group">
+          <label>Upload Valid Government ID <span class="req">*</span></label>
+          <div class="file-upload-box" id="id-upload-box">
+            <span>📎</span>
+            <p>Click to upload or drag your ID here</p>
+            <small>Accepted: JPG, PNG · Max 5MB</small>
+            <input type="file" name="gov_id" id="gov_id_input" accept="image/jpeg,image/png" required onchange="previewAndValidateID(this)" />
+          </div>
+          <div id="id-preview-wrap" style="display:none;margin-top:10px;">
+            <img id="id-preview-img" src="" alt="ID Preview" style="max-width:100%;max-height:220px;border-radius:8px;border:2px solid #e8e8e8;object-fit:contain;display:block;" />
+            <button type="button" onclick="clearIDUpload()" style="margin-top:6px;background:none;border:none;color:#c0392b;font-size:12px;font-weight:600;cursor:pointer;">✕ Remove file</button>
+          </div>
+          <div id="ocr-status" style="display:none;margin-top:8px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;"></div>
+          <small class="field-note">Your ID will be scanned and verified automatically. Please upload a clear, well-lit photo.</small>
+        </div>
+
+        <div class="reg-section-title">Account Credentials</div>
+        <div class="reg-grid-2">
+          <div class="form-group">
+            <label>Password <span class="req">*</span></label>
+            <input type="password" id="js-password" name="password" placeholder="Create a strong password" required oninput="checkPasswordStrength(this,'js-pw-reqs');checkPasswordMatch('js-password','js-confirm','js-pw-mismatch')" />
+            <div class="pw-reqs" id="js-pw-reqs">
+              <small class="pw-req" id="js-req-len">At least 8 characters</small>
+              <small class="pw-req" id="js-req-cap">At least 1 capital letter</small>
+              <small class="pw-req" id="js-req-num">At least 1 number</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirm Password <span class="req">*</span></label>
+            <input type="password" id="js-confirm" name="confirm_password" placeholder="Re-enter your password" required oninput="checkPasswordMatch('js-password','js-confirm','js-pw-mismatch')" />
+            <small id="js-pw-mismatch" class="field-error" style="display:none;">Passwords do not match.</small>
+          </div>
+        </div>
+        <label class="show-pw-label">
+          <input type="checkbox" onchange="toggleShowPassword('js-password','js-confirm',this)" /> Show Password
+        </label>
+
+        <div class="form-group privacy-check" style="margin-top:20px;">
+          <label>
+            <input type="checkbox" required />
+            I have read and agree to the <a href="#">Data Privacy Policy</a> of PESO Bago City in compliance with the <strong>Data Privacy Act of 2012</strong>.
+          </label>
+        </div>
+
+        <div id="msg-jobseeker" class="form-msg" style="display:none;"></div>
+        <button type="submit" class="btn-submit">Create Job Seeker Account</button>
+        <p class="reg-login-note">Already have an account? <a href="login.html">Log In here</a></p>
+      </form>
+
+      <!-- ── EMPLOYER FORM ── -->
+      <form id="form-employer" class="reg-form" onsubmit="submitForm(event,'employer')" enctype="multipart/form-data">
+        <input type="hidden" name="role" value="employer" />
+
+        <div class="reg-section-title">Company Information</div>
+        <div class="form-group">
+          <label>Company / Business Name <span class="req">*</span></label>
+          <input type="text" name="company_name" placeholder="ABC Corporation" required />
+        </div>
+        <div class="reg-grid-2">
+          <div class="form-group">
+            <label>Industry / Sector <span class="req">*</span></label>
+            <select name="industry" required>
+              <option value="">Select</option>
+              <option>Agriculture</option>
+              <option>Manufacturing</option>
+              <option>Retail / Trade</option>
+              <option>Healthcare</option>
+              <option>Education</option>
+              <option>Information Technology</option>
+              <option>Construction</option>
+              <option>Hospitality / Tourism</option>
+              <option>Government / Public Sector</option>
+              <option>Others</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Company Size <span class="req">*</span></label>
+            <select name="company_size" required>
+              <option value="">Select</option>
+              <option>Micro (1–9 employees)</option>
+              <option>Small (10–99 employees)</option>
+              <option>Medium (100–199 employees)</option>
+              <option>Large (200+ employees)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Business Address <span class="req">*</span></label>
+          <input type="text" name="business_address" placeholder="Complete business address" required />
+        </div>
+
+        <div class="reg-section-title">Contact Person</div>
+        <div class="reg-grid-2">
+          <div class="form-group">
+            <label>Contact Person Name <span class="req">*</span></label>
+            <input type="text" name="contact_name" placeholder="Full Name" required />
+          </div>
+          <div class="form-group">
+            <label>Designation / Position <span class="req">*</span></label>
+            <input type="text" name="designation" placeholder="e.g. HR Manager" required />
+          </div>
+          <div class="form-group">
+            <label>Contact Number <span class="req">*</span></label>
+            <input type="tel" name="contact_number" placeholder="09XXXXXXXXX" maxlength="11"
+              pattern="^09\d{9}$" inputmode="numeric" oninput="validatePhone(this)" required />
+            <small class="field-note">Format: 09XXXXXXXXX</small>
+          </div>
+          <div class="form-group">
+            <label>Email Address <span class="req">*</span></label>
+            <input type="email" name="email" placeholder="hr@company.com" oninput="validateEmail(this)" required />
+          </div>
+        </div>
+
+        <div class="reg-section-title">Inclusive Hiring</div>
+        <div class="form-group">
+          <label>Does your company practice inclusive hiring for PWDs?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="inclusive_hiring" value="yes" /> Yes</label>
+            <label><input type="radio" name="inclusive_hiring" value="no" /> No</label>
+            <label><input type="radio" name="inclusive_hiring" value="planning" /> Planning to</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Workplace Accessibility Features <span class="optional">(if any)</span></label>
+          <textarea name="accessibility" rows="2" placeholder="e.g. Ramps, accessible restrooms, remote work options..."></textarea>
+        </div>
+
+        <div class="reg-section-title">Accreditation Documents</div>
+        <div class="form-group">
+          <label>Upload Business Permit / Accreditation <span class="req">*</span></label>
+          <div class="file-upload-box" id="permit-upload-box">
+            <span>📎</span>
+            <p>Click to upload or drag your document here</p>
+            <small>Accepted: JPG, PNG, PDF · Max 5MB</small>
+            <input type="file" name="business_permit" id="permit_input" accept=".jpg,.jpeg,.png,.pdf" required onchange="previewFile(this,'permit-upload-box','permit-preview-wrap','permit-preview-img')" />
+          </div>
+          <div id="permit-preview-wrap" style="display:none;margin-top:10px;">
+            <img id="permit-preview-img" src="" alt="Document Preview" style="max-width:100%;max-height:220px;border-radius:8px;border:2px solid #e8e8e8;object-fit:contain;display:block;" />
+            <button type="button" onclick="clearPermitUpload()" style="margin-top:6px;background:none;border:none;color:#c0392b;font-size:12px;font-weight:600;cursor:pointer;">✕ Remove file</button>
+          </div>
+        </div>
+
+        <div class="reg-section-title">Account Credentials</div>
+        <div class="reg-grid-2">
+          <div class="form-group">
+            <label>Password <span class="req">*</span></label>
+            <input type="password" id="em-password" name="password" placeholder="Create a strong password" required oninput="checkPasswordStrength(this,'em-pw-reqs');checkPasswordMatch('em-password','em-confirm','em-pw-mismatch')" />
+            <div class="pw-reqs" id="em-pw-reqs">
+              <small class="pw-req" id="em-req-len">At least 8 characters</small>
+              <small class="pw-req" id="em-req-cap">At least 1 capital letter</small>
+              <small class="pw-req" id="em-req-num">At least 1 number</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirm Password <span class="req">*</span></label>
+            <input type="password" id="em-confirm" name="confirm_password" placeholder="Re-enter your password" required oninput="checkPasswordMatch('em-password','em-confirm','em-pw-mismatch')" />
+            <small id="em-pw-mismatch" class="field-error" style="display:none;">Passwords do not match.</small>
+          </div>
+        </div>
+        <label class="show-pw-label">
+          <input type="checkbox" onchange="toggleShowPassword('em-password','em-confirm',this)" /> Show Password
+        </label>
+
+        <div class="form-group privacy-check" style="margin-top:20px;">
+          <label>
+            <input type="checkbox" required />
+            I have read and agree to the <a href="#">Data Privacy Policy</a> of PESO Bago City in compliance with the <strong>Data Privacy Act of 2012</strong>.
+          </label>
+        </div>
+
+        <div id="msg-employer" class="form-msg" style="display:none;"></div>
+        <button type="submit" class="btn-submit">Create Employer Account</button>
+        <p class="reg-login-note">Already have an account? <a href="login.html">Log In here</a></p>
+      </form>
+
+    </div>
+  </div>
+
+  <div class="reg-footer">
+    <span>© 2026 PESO Bago City – SkillBridge AI. All rights reserved.</span>
+    <a href="index (3).html">← Back to PESO Website</a>
+  </div>
+
+  <style>
+    .form-msg { padding:12px 16px; border-radius:8px; font-size:13px; font-weight:600; margin-top:16px; }
+    .form-msg.success { background:#e6f9f0; color:#1a7a4a; border:1px solid #a3e4c1; }
+    .form-msg.error   { background:#fdecea; color:#c0392b; border:1px solid #f5b7b1; }
+    .addr-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media(max-width:640px){ .addr-grid{ grid-template-columns:1fr; } }
+    .field-error { color:#c0392b; font-size:11.5px; margin-top:4px; display:block; }
+    .pw-reqs { display:flex; flex-direction:column; gap:3px; margin-top:6px; }
+    .pw-req  { font-size:11.5px; color:#aaa; transition:color .2s; }
+    .pw-req.met { color:#1a7a4a; }
+    .pw-req.met::before { content:'✓ '; }
+    .show-pw-label { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:#777; cursor:pointer; margin-top:8px; }
+    
+    /* Verification Step Styles */
+    .reg-verification-step {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .reg-verification-desc {
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 16px;
+      text-align: center;
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .input-group input {
+      flex: 1;
+    }
+    
+    .btn-send-code, .btn-verify-code, .btn-proceed {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+    
+    .btn-send-code:hover, .btn-verify-code:hover, .btn-proceed:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-send-code:disabled, .btn-verify-code:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .code-input-container {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .code-input-container input {
+      flex: 1;
+      font-size: 18px;
+      text-align: center;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+    
+    .verified-success {
+      text-align: center;
+      padding: 25px;
+      background: #e6f9f0;
+      border-radius: 8px;
+      border: 2px solid #a3e4c1;
+    }
+    
+    .success-icon {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 15px;
+    }
+    
+    .verified-success strong {
+      color: #1a7a4a;
+      font-size: 18px;
+      display: block;
+      margin-bottom: 10px;
+    }
+    
+    .verified-success p {
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .btn-proceed {
+      background: #28a745;
+      padding: 15px 30px;
+      font-size: 16px;
+    }
+    
+    .btn-proceed:hover {
+      background: #218838;
+    }
+    
+    /* Hide forms and role selection initially */
+    .reg-role-select {
+      display: none;
+    }
+    
+    .reg-form {
+      display: none;
+    }
+    
+    .reg-form.active {
+      display: block;
+    }
+    
+    /* Timer styles */
+    .countdown-timer {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    .countdown-timer.warning {
+      color: #ffc107;
+    }
+    
+    .countdown-timer.danger {
+      color: #dc3545;
+    }
+  </style>
+
+  <script>
+    // ── Role switcher ────────────────────────────────────────────────────────
+    function switchRole(role, card) {
+      document.querySelectorAll('.reg-role-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+      document.querySelectorAll('.reg-form').forEach(f => f.classList.remove('active'));
+      document.getElementById('form-' + role).classList.add('active');
+    }
+
+    function togglePWD() {
+      const fields = document.getElementById('pwd-fields');
+      fields.classList.toggle('hidden', !document.getElementById('is-pwd').checked);
+    }
+
+    // ── Age from DOB (signup.php style) ─────────────────────────────────────
+    function updateAge(dobId, ageId) {
+      const val = document.getElementById(dobId).value;
+      const ageEl = document.getElementById(ageId);
+      if (!val) { ageEl.value = ''; return; }
+      const dob = new Date(val + 'T00:00:00');
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+      ageEl.value = age >= 0 ? age : '';
+    }
+
+    // ── Password strength (signup.php style) ────────────────────────────────
+    function checkPasswordStrength(input, reqsId) {
+      const v = input.value;
+      const prefix = reqsId.replace('-pw-reqs', '');
+      const lenEl = document.getElementById(prefix + '-req-len');
+      const capEl = document.getElementById(prefix + '-req-cap');
+      const numEl = document.getElementById(prefix + '-req-num');
+      if (lenEl) lenEl.classList.toggle('met', v.length >= 8);
+      if (capEl) capEl.classList.toggle('met', /[A-Z]/.test(v));
+      if (numEl) numEl.classList.toggle('met', /\d/.test(v));
+    }
+
+    function checkPasswordMatch(pwId, cfId, errId) {
+      const pw = document.getElementById(pwId).value;
+      const cf = document.getElementById(cfId).value;
+      const el = document.getElementById(errId);
+      if (!el) return;
+      el.style.display = (cf && pw !== cf) ? 'block' : 'none';
+    }
+
+    function toggleShowPassword(pwId, cfId, checkbox) {
+      const t = checkbox.checked ? 'text' : 'password';
+      document.getElementById(pwId).type = t;
+      document.getElementById(cfId).type = t;
+    }
+
+    // ── Phone / email inline validation ─────────────────────────────────────
+    function validatePhone(input) {
+      input.value = input.value.replace(/\D/g, '').slice(0, 11);
+      let err = input.nextElementSibling?.classList.contains('field-error') ? input.nextElementSibling : null;
+      const bad = input.value.length > 0 && (input.value.length !== 11 || !input.value.startsWith('09'));
+      if (bad && !err) {
+        const e = document.createElement('small');
+        e.className = 'field-error';
+        e.textContent = 'Must start with 09 and be 11 digits.';
+        input.insertAdjacentElement('afterend', e);
+      } else if (!bad && err) {
+        err.remove();
+      }
+    }
+
+    function validateEmail(input) {
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+      let err = input.nextElementSibling?.classList.contains('field-error') ? input.nextElementSibling : null;
+      if (input.value && !valid && !err) {
+        const e = document.createElement('small');
+        e.className = 'field-error';
+        e.textContent = 'Please enter a valid email address.';
+        input.insertAdjacentElement('afterend', e);
+      } else if (valid && err) {
+        err.remove();
+      }
+    }
+
+    // ── PSGC Address ─────────────────────────────────────────────────────────
+    const PSGC = 'https://psgc.gitlab.io/api';
+    function setLoading(on) { document.getElementById('addr-loading').style.display = on ? 'inline' : 'none'; }
+    function resetSelect(id, label, disabled = true) {
+      const s = document.getElementById(id);
+      s.innerHTML = `<option value="">${label}</option>`;
+      s.disabled = disabled;
+    }
+    function fillSelect(id, items, label) {
+      const s = document.getElementById(id);
+      s.innerHTML = `<option value="">${label}</option>`;
+      items.sort((a,b) => a.name.localeCompare(b.name)).forEach(item => {
+        const o = document.createElement('option');
+        o.value = item.code; o.textContent = item.name;
+        s.appendChild(o);
+      });
+      s.disabled = false;
+    }
+    function updateAddressHidden() {
+      const ids = ['js-barangay','js-city','js-province','js-region'];
+      const skip = ['Select Region','Select Province','Select City / Municipality','Select Barangay'];
+      const parts = ids.map(id => {
+        const s = document.getElementById(id);
+        return s?.options[s.selectedIndex]?.text;
+      }).filter(t => t && !skip.includes(t));
+      document.getElementById('js-address-hidden').value = parts.join(', ');
+    }
+    async function loadRegions() {
+      setLoading(true);
+      try {
+        const data = await fetch(`${PSGC}/regions/`).then(r => r.json());
+        fillSelect('js-region', data, 'Select Region');
+        const sel = document.getElementById('js-region');
+        const r6 = [...sel.options].find(o => o.textContent.includes('Western Visayas'));
+        if (r6) { sel.value = r6.value; loadProvinces(); }
+      } catch { resetSelect('js-region','Select Region',false); }
+      setLoading(false);
+    }
+    async function loadProvinces() {
+      const code = document.getElementById('js-region').value;
+      resetSelect('js-province','Select Province');
+      resetSelect('js-city','Select City / Municipality');
+      resetSelect('js-barangay','Select Barangay');
+      updateAddressHidden();
+      if (!code) return;
+      setLoading(true);
+      try {
+        const data = await fetch(`${PSGC}/regions/${code}/provinces/`).then(r => r.json());
+        fillSelect('js-province', data, 'Select Province');
+        const sel = document.getElementById('js-province');
+        const neg = [...sel.options].find(o => o.textContent.includes('Negros Occidental'));
+        if (neg) { sel.value = neg.value; loadCities(); }
+      } catch { resetSelect('js-province','Select Province'); }
+      setLoading(false);
+    }
+    async function loadCities() {
+      const code = document.getElementById('js-province').value;
+      resetSelect('js-city','Select City / Municipality');
+      resetSelect('js-barangay','Select Barangay');
+      updateAddressHidden();
+      if (!code) return;
+      setLoading(true);
+      try {
+        const [cr, mr] = await Promise.all([
+          fetch(`${PSGC}/provinces/${code}/cities/`),
+          fetch(`${PSGC}/provinces/${code}/municipalities/`)
+        ]);
+        const cities = cr.ok ? await cr.json() : [];
+        const munis  = mr.ok ? await mr.json() : [];
+        fillSelect('js-city', [...cities,...munis], 'Select City / Municipality');
+        const sel = document.getElementById('js-city');
+        const bago = [...sel.options].find(o => o.textContent.toLowerCase().includes('bago'));
+        if (bago) { sel.value = bago.value; loadBarangays(); }
+      } catch { resetSelect('js-city','Select City / Municipality'); }
+      setLoading(false);
+    }
+    async function loadBarangays() {
+      const code = document.getElementById('js-city').value;
+      resetSelect('js-barangay','Select Barangay');
+      updateAddressHidden();
+      if (!code) return;
+      setLoading(true);
+      try {
+        let res = await fetch(`${PSGC}/cities/${code}/barangays/`);
+        if (!res.ok) res = await fetch(`${PSGC}/municipalities/${code}/barangays/`);
+        fillSelect('js-barangay', await res.json(), 'Select Barangay');
+      } catch { resetSelect('js-barangay','Select Barangay'); }
+      setLoading(false);
+    }
+    loadRegions();
+
+    // ── OCR / ID upload ──────────────────────────────────────────────────────
+    let ocrPassed = false, ocrText = '', ocrSnapFirst = '', ocrSnapLast = '', ocrSnapDob = '';
+
+    function normalize(s) { return s.trim().toLowerCase().replace(/[^a-z0-9]/g,''); }
+
+    function checkIDMatch() {
+      const tn = normalize(ocrText);
+      const t  = ocrText.toLowerCase();
+      const firstParts = document.querySelector('[name="first_name"]').value.trim().split(/\s+/).map(normalize).filter(Boolean);
+      const lastParts  = document.querySelector('[name="last_name"]').value.trim().split(/\s+/).map(normalize).filter(Boolean);
+      const missing = [];
+      if (firstParts.length && !firstParts.every(p => tn.includes(p))) missing.push('first name');
+      if (lastParts.length  && !lastParts.every(p => tn.includes(p)))  missing.push('last name');
+      const dobRaw = document.querySelector('[name="dob"]').value;
+      if (dobRaw) {
+        const [yyyy,mm,dd] = dobRaw.split('-');
+        const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+        const dobFound = [
+          `${mm}/${dd}`, `${dd}/${mm}`,
+          `${mm}/${dd}/${yyyy}`, `${dd}/${mm}/${yyyy}`,
+          `${yyyy}/${mm}/${dd}`, `${yyyy}-${mm}-${dd}`,
+          `${mm}/${dd}/${yyyy.slice(2)}`,
+          months[parseInt(mm,10)-1],
+        ].some(f => t.includes(f));
+        if (!dobFound) missing.push('date of birth');
+      }
+      return missing;
+    }
+
+    function previewFile(input, boxId, wrapId, imgId) {
+      if (!input.files?.[0]) return;
+      const file = input.files[0];
+      document.getElementById(wrapId).style.display = 'block';
+      const img = document.getElementById(imgId);
+      if (file.type.startsWith('image/')) {
+        img.style.display = 'block';
+        const reader = new FileReader();
+        reader.onload = e => { img.src = e.target.result; };
+        reader.readAsDataURL(file);
+      }
+      const box = document.getElementById(boxId);
+      if (box) box.style.borderColor = '#2ecc71';
+    }
+
+    function clearIDUpload() {
+      document.getElementById('gov_id_input').value = '';
+      document.getElementById('id-preview-wrap').style.display = 'none';
+      document.getElementById('id-preview-img').src = '';
+      document.getElementById('id-upload-box').style.borderColor = '';
+      const st = document.getElementById('ocr-status');
+      st.style.display = 'none';
+      ocrPassed = false; ocrText = ''; ocrSnapFirst = ''; ocrSnapLast = ''; ocrSnapDob = '';
+    }
+
+    function clearPermitUpload() {
+      document.getElementById('permit_input').value = '';
+      document.getElementById('permit-preview-wrap').style.display = 'none';
+      document.getElementById('permit-preview-img').src = '';
+      document.getElementById('permit-upload-box').style.borderColor = '';
+    }
+
+    function previewAndValidateID(input) {
+      if (!input.files?.[0]) return;
+      const file = input.files[0];
+      const statusEl = document.getElementById('ocr-status');
+      const box = document.getElementById('id-upload-box');
+
+      previewFile(input, 'id-upload-box', 'id-preview-wrap', 'id-preview-img');
+
+      ocrPassed = false; ocrText = '';
+      statusEl.style.cssText = 'display:block;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;background:#fff8e1;color:#7d5a00;border:1px solid #ffe082;';
+      statusEl.textContent = '🔍 Scanning ID, please wait...';
+      box.style.borderColor = '#f0c040';
+
+      const fd = new FormData();
+      fd.append('apikey','K88063278988957');
+      fd.append('language','eng');
+      fd.append('isOverlayRequired','false');
+      fd.append('detectOrientation','true');
+      fd.append('scale','true');
+      fd.append('OCREngine','2');
+      fd.append('file', file);
+
+      fetch('https://api.ocr.space/parse/image', { method:'POST', body:fd })
+        .then(r => r.json())
+        .then(data => {
+          if (data.IsErroredOnProcessing) throw new Error(data.ErrorMessage?.[0] || 'OCR failed.');
+          const text = (data.ParsedResults||[]).map(r => r.ParsedText||'').join('').trim();
+          if (text.length < 10 || (!/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/.test(text) && !/[A-Z0-9\-]{5,}/.test(text))) {
+            throw new Error('Image does not appear to be a valid government ID. Please upload a clearer photo.');
+          }
+          ocrText = text;
+          const missing = checkIDMatch();
+          if (missing.length > 0) {
+            ocrPassed = false;
+            statusEl.style.cssText = 'display:block;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;background:#fdecea;color:#c0392b;border:1px solid #f5b7b1;';
+            statusEl.textContent = '❌ ID mismatch: ' + missing.join(' and ') + ' on the ID does not match what you entered. Please check your details or upload the correct ID.';
+            box.style.borderColor = '#c0392b';
+            return;
+          }
+          ocrPassed = true;
+          ocrSnapFirst = normalize(document.querySelector('[name="first_name"]').value);
+          ocrSnapLast  = normalize(document.querySelector('[name="last_name"]').value);
+          ocrSnapDob   = document.querySelector('[name="dob"]').value;
+          statusEl.style.cssText = 'display:block;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;background:#e6f9f0;color:#1a7a4a;border:1px solid #a3e4c1;';
+          statusEl.textContent = '✅ ID verified — name and date of birth match.';
+          box.style.borderColor = '#2ecc71';
+        })
+        .catch(err => {
+          ocrPassed = false;
+          statusEl.style.cssText = 'display:block;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600;background:#fdecea;color:#c0392b;border:1px solid #f5b7b1;';
+          statusEl.textContent = '❌ ' + err.message;
+          box.style.borderColor = '#c0392b';
+        });
+    }
+
+    // ── Email Verification ─────────────────────────────────────────────────────
+    let verificationTimer = null;
+    let countdownInterval = null;
+    let verifiedContact = null;
+
+    function sendVerificationCode() {
+      const input = document.getElementById('verify-input');
+      const contact = input.value.trim();
+      const sendBtn = document.getElementById('send-code-btn');
+      const messageEl = document.getElementById('verification-message');
+      
+      if (!contact) {
+        showVerificationMessage('Please enter an email address or mobile number.', 'error');
+        return;
+      }
+      
+      // Validate email or mobile
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
+      const isMobile = /^09\d{9}$/.test(contact);
+      
+      if (!isEmail && !isMobile) {
+        showVerificationMessage('Please enter a valid email address or mobile number (09XXXXXXXXX).', 'error');
+        return;
+      }
+      
+      // Disable button and show loading
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending...';
+      
+      const formData = new FormData();
+      formData.append('action', 'send_code');
+      formData.append('email', isEmail ? contact : '');
+      formData.append('mobile', isMobile ? contact : '');
+      
+      fetch('../assets/php/email_verifier.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showVerificationMessage(data.message, 'success');
+            document.getElementById('code-input-group').style.display = 'block';
+            document.getElementById('verification-code').focus();
+            startCountdown();
+          } else {
+            showVerificationMessage(data.message, 'error');
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Send Code';
+          }
+        })
+      .catch(error => {
+        showVerificationMessage('Failed to send verification code. Please try again.', 'error');
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send Code';
+      });
+    }
+
+    function verifyCode() {
+      const code = document.getElementById('verification-code').value.trim();
+      const verifyBtn = document.getElementById('verify-code-btn');
+      
+      if (!code) {
+        showVerificationMessage('Please enter the verification code.', 'error');
+        return;
+      }
+      
+      if (!/^[0-9]{6}$/.test(code)) {
+        showVerificationMessage('Verification code must be 6 digits.', 'error');
+        return;
+      }
+      
+      verifyBtn.disabled = true;
+      verifyBtn.textContent = 'Verifying...';
+      
+      const formData = new FormData();
+      formData.append('action', 'verify_code');
+      formData.append('code', code);
+      
+      fetch('../assets/php/email_verifier.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          verifiedContact = document.getElementById('verify-input').value.trim();
+          showVerificationMessage(data.message, 'success');
+          // Automatically proceed to registration after 1 second
+          setTimeout(() => {
+            proceedToRegistration();
+          }, 1000);
+        } else {
+          showVerificationMessage(data.message, 'error');
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = 'Verify';
+        }
+      })
+      .catch(error => {
+        showVerificationMessage('Verification failed. Please try again.', 'error');
+        verifyBtn.disabled = false;
+        verifyBtn.textContent = 'Verify';
+      });
+    }
+
+    function showVerificationMessage(message, type) {
+      const messageEl = document.getElementById('verification-message');
+      messageEl.textContent = message;
+      messageEl.className = 'form-msg ' + type;
+      messageEl.style.display = 'block';
+      
+      if (type === 'success') {
+        // Keep message visible longer since we're showing progression
+        setTimeout(() => {
+          if (messageEl.textContent.includes('verified successfully')) {
+            messageEl.textContent = '✅ Verified! Proceeding to registration...';
+          }
+        }, 500);
+      }
+    }
+
+    function showVerificationSuccess() {
+      // Hide verification form
+      document.querySelector('.reg-verification-form').style.display = 'none';
+      
+      // Show success message
+      const successEl = document.getElementById('verified-success');
+      successEl.style.display = 'block';
+      
+      // Clear countdown
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+    }
+
+    function proceedToRegistration() {
+      // Hide verification step
+      document.getElementById('verification-step').style.display = 'none';
+      
+      // Show role selection and forms
+      document.querySelector('.reg-role-select').style.display = 'block';
+      document.getElementById('form-jobseeker').classList.add('active');
+      
+      // Pre-fill verified email/mobile in the forms
+      if (verifiedContact) {
+        const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(verifiedContact);
+        
+        // Job seeker form
+        const jsEmail = document.querySelector('#form-jobseeker [name="email"]');
+        const jsMobile = document.querySelector('#form-jobseeker [name="mobile"]');
+        if (isEmail && jsEmail) jsEmail.value = verifiedContact;
+        if (!isEmail && jsMobile) jsMobile.value = verifiedContact;
+        
+        // Employer form
+        const empEmail = document.querySelector('#form-employer [name="email"]');
+        const empMobile = document.querySelector('#form-employer [name="contact_number"]');
+        if (isEmail && empEmail) empEmail.value = verifiedContact;
+        if (!isEmail && empMobile) empMobile.value = verifiedContact;
+      }
+    }
+
+    function startCountdown() {
+      let seconds = 600; // 10 minutes
+      const sendBtn = document.getElementById('send-code-btn');
+      
+      countdownInterval = setInterval(() => {
+        seconds--;
+        
+        if (seconds <= 0) {
+          clearInterval(countdownInterval);
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'Send Code';
+          showVerificationMessage('Verification code expired. Please request a new one.', 'error');
+          return;
+        }
+        
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        sendBtn.textContent = `Resend (${minutes}:${remainingSeconds.toString().padStart(2, '0')})`;
+      }, 1000);
+    }
+
+    // Auto-format verification code input
+    document.getElementById('verification-code').addEventListener('input', function(e) {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+    });
+
+    // Allow Enter key to submit verification code
+    document.getElementById('verification-code').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && e.target.value.length === 6) {
+        verifyCode();
+      }
+    });
+
+    // ── Submit ───────────────────────────────────────────────────────────────
+    function submitForm(e, role) {
+      e.preventDefault();
+      const form  = document.getElementById('form-' + role);
+      const msgEl = document.getElementById('msg-' + role);
+      const btn   = form.querySelector('.btn-submit');
+
+      // Password strength check
+      const pw = form.querySelector('[name="password"]').value;
+      if (pw.length < 8 || !/[A-Z]/.test(pw) || !/\d/.test(pw)) {
+        showMsg(msgEl, 'error', 'Password must be at least 8 characters with 1 capital letter and 1 number.');
+        return;
+      }
+      if (pw !== form.querySelector('[name="confirm_password"]').value) {
+        showMsg(msgEl, 'error', 'Passwords do not match.');
+        return;
+      }
+
+      if (role === 'jobseeker') {
+        // OCR check
+        if (!ocrPassed || !ocrText) {
+          showMsg(msgEl, 'error', 'Please upload a valid government ID and wait for it to be verified.');
+          return;
+        }
+        // Re-check only if fields changed after scan
+        const curFirst = normalize(document.querySelector('[name="first_name"]').value);
+        const curLast  = normalize(document.querySelector('[name="last_name"]').value);
+        const curDob   = document.querySelector('[name="dob"]').value;
+        if (curFirst !== ocrSnapFirst || curLast !== ocrSnapLast || curDob !== ocrSnapDob) {
+          const missing = checkIDMatch();
+          if (missing.length > 0) {
+            showMsg(msgEl, 'error', 'ID mismatch: ' + missing.join(' and ') + ' does not match the uploaded ID.');
+            return;
+          }
+        }
+        // Address check
+        if (!document.getElementById('js-city').value || !document.getElementById('js-barangay').value) {
+          showMsg(msgEl, 'error', 'Please select your complete address down to the barangay.');
+          return;
+        }
+        updateAddressHidden();
+        // Phone check
+        const phone = form.querySelector('[name="mobile"]').value;
+        if (!phone.startsWith('09') || phone.length !== 11) {
+          showMsg(msgEl, 'error', 'Mobile number must start with 09 and be 11 digits.');
+          return;
+        }
+      }
+
+      msgEl.style.display = 'none';
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      fetch('../assets/php/register.php', { method:'POST', body: new FormData(form) })
+        .then(r => r.json())
+        .then(data => {
+          showMsg(msgEl, data.success ? 'success' : 'error', data.message);
+          if (data.success) {
+            form.reset();
+            setTimeout(() => window.location.href = 'login.html', 2000);
+          }
+        })
+        .catch(() => showMsg(msgEl, 'error', 'An unexpected error occurred. Please try again.'))
+        .finally(() => {
+          btn.disabled = false;
+          btn.textContent = role === 'jobseeker' ? 'Create Job Seeker Account' : 'Create Employer Account';
+        });
+    }
+
+    function showMsg(el, type, text) {
+      el.style.display = 'block';
+      el.className = 'form-msg ' + type;
+      el.textContent = text;
+      el.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }
+  </script>
+
+</body>
+</html>
