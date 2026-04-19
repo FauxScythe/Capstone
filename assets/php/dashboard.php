@@ -1,495 +1,191 @@
 <?php
 session_start();
+require_once 'config.php';
 
 // Check if user is logged in
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-    header('Location: login.html');
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['user_role'])) {
+    header('Location: ../templates/login.html');
     exit;
 }
 
-require_once 'config.php';
-
-// Get user data
-$user_role = $_SESSION['user_role'];
-$user_name = $_SESSION['user_name'];
 $user_id = $_SESSION['user_id'];
+$user_role = $_SESSION['user_role'];
+$user_data = null;
+$applications = [];
+$error = '';
+$success = '';
 
-// Get role-specific data
-$dashboard_data = [];
-switch ($user_role) {
-    case 'jobseeker':
-        $stmt = mysqli_prepare($conn, "SELECT * FROM jobseekers WHERE id = ?");
-        mysqli_stmt_bind_param($stmt, 'i', $user_id);
-        mysqli_stmt_execute($stmt);
-        $dashboard_data = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-        break;
-        
-    case 'employer':
-        $stmt = mysqli_prepare($conn, "SELECT * FROM employers WHERE id = ?");
-        mysqli_stmt_bind_param($stmt, 'i', $user_id);
-        mysqli_stmt_execute($stmt);
-        $dashboard_data = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-        break;
-        
-    case 'officer':
-        $stmt = mysqli_prepare($conn, "SELECT * FROM peso_officers WHERE id = ?");
-        mysqli_stmt_bind_param($stmt, 'i', $user_id);
-        mysqli_stmt_execute($stmt);
-        $dashboard_data = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-        break;
+function calculateAge($birthday) {
+    if (empty($birthday)) {
+        return null;
+    }
+
+    try {
+        $dob = new DateTime($birthday);
+        $today = new DateTime('today');
+        if ($dob > $today) {
+            return null;
+        }
+        return $dob->diff($today)->y;
+    } catch (Exception $e) {
+        return null;
+    }
 }
 
-mysqli_stmt_close($stmt);
-mysqli_close($conn);
+try {
+    // Get user data based on role
+    if ($user_role === 'jobseeker') {
+        $stmt = mysqli_prepare($conn, "SELECT id, first_name, last_name, email, mobile, birth_date, address, barangay, city, disability_type, id_verification_status, id_type, id_image_path, created_at FROM jobseekers WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, 'i', $user_id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $user_data = mysqli_fetch_assoc($result);
+        
+        // Get job applications
+        $stmt = mysqli_prepare($conn, "SELECT ja.*, j.title, j.company_name, j.status as job_status FROM job_applications ja LEFT JOIN job_postings j ON ja.job_id = j.id WHERE ja.jobseeker_id = ? ORDER BY ja.application_date DESC");
+        mysqli_stmt_bind_param($stmt, 'i', $user_id);
+        mysqli_stmt_execute($stmt);
+        $applications = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+        
+    } elseif ($user_role === 'employer') {
+        $stmt = mysqli_prepare($conn, "SELECT id, company_name, contact_person, email, mobile, business_address, industry, created_at FROM employers WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, 'i', $user_id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $user_data = mysqli_fetch_assoc($result);
+        
+        // Get job postings
+        $stmt = mysqli_prepare($conn, "SELECT * FROM job_postings WHERE employer_id = ? ORDER BY posted_date DESC");
+        mysqli_stmt_bind_param($stmt, 'i', $user_id);
+        mysqli_stmt_execute($stmt);
+        $applications = mysqli_fetch_all(mysqli_stmt_get_result($stmt), MYSQLI_ASSOC);
+        
+    } elseif ($user_role === 'peso_officer') {
+        $stmt = mysqli_prepare($conn, "SELECT id, name, email, position, office_address, created_at FROM peso_officers WHERE id = ?");
+        mysqli_stmt_bind_param($stmt, 'i', $user_id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $user_data = mysqli_fetch_assoc($result);
+        
+        // Get statistics
+        $stmt = mysqli_prepare($conn, "SELECT COUNT(*) as total_seekers FROM jobseekers");
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $total_seekers = mysqli_fetch_assoc($result)['total_seekers'];
+        
+        $stmt = mysqli_prepare($conn, "SELECT COUNT(*) as total_employers FROM employers");
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $total_employers = mysqli_fetch_assoc($result)['total_employers'];
+        
+        $stmt = mysqli_prepare($conn, "SELECT COUNT(*) as total_postings FROM job_postings");
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $total_postings = mysqli_fetch_assoc($result)['total_postings'];
+        
+        $stmt = mysqli_prepare($conn, "SELECT COUNT(*) as total_applications FROM job_applications");
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        $total_applications = mysqli_fetch_assoc($result)['total_applications'];
+    }
+    
+} catch (Exception $e) {
+    $error = 'Error loading dashboard: ' . $e->getMessage();
+}
+
+// Handle profile update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
+    if ($user_role === 'jobseeker') {
+        $first_name = trim($_POST['first_name'] ?? '');
+        $last_name = trim($_POST['last_name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $mobile = trim($_POST['mobile'] ?? '');
+        $address = trim($_POST['address'] ?? '');
+        $barangay = trim($_POST['barangay'] ?? '');
+        $city = trim($_POST['city'] ?? '');
+        $birth_date = trim($_POST['birth_date'] ?? '');
+        
+        if (empty($first_name) || empty($last_name) || empty($email) || empty($mobile)) {
+            $error = 'Required fields are missing.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Please enter a valid email address.';
+        } elseif (!preg_match('/^(09\d{9})$/', preg_replace('/[\s\-\(\)]/', '', $mobile))) {
+            $error = 'Please enter a valid Philippine mobile number.';
+        } else {
+            try {
+                // Update jobseeker profile
+                $stmt = mysqli_prepare($conn, "UPDATE jobseekers SET first_name = ?, last_name = ?, email = ?, mobile = ?, address = ?, barangay = ?, city = ?, birth_date = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt, "ssssssssi", $first_name, $last_name, $email, $mobile, $address, $barangay, $city, $birth_date, $user_id);
+                if (mysqli_stmt_execute($stmt)) {
+                    $success = 'Profile updated successfully!';
+                    
+                    // Refresh user data
+                    $stmt = mysqli_prepare($conn, "SELECT id, first_name, last_name, email, mobile, birth_date, address, barangay, city, disability_type, id_verification_status, id_type, id_image_path, created_at FROM jobseekers WHERE id = ?");
+                    mysqli_stmt_bind_param($stmt, 'i', $user_id);
+                    mysqli_stmt_execute($stmt);
+                    $result = mysqli_stmt_get_result($stmt);
+                    $user_data = mysqli_fetch_assoc($result);
+                } else {
+                    $error = 'Failed to update profile.';
+                }
+            } catch (Exception $e) {
+                $error = 'Database error: ' . $e->getMessage();
+            }
+        }
+    } elseif ($user_role === 'employer') {
+        $company_name = trim($_POST['company_name'] ?? '');
+        $contact_person = trim($_POST['contact_person'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $mobile = trim($_POST['mobile'] ?? '');
+        $business_address = trim($_POST['business_address'] ?? '');
+        $industry = trim($_POST['industry'] ?? '');
+        
+        if (empty($company_name) || empty($contact_person) || empty($email) || empty($mobile)) {
+            $error = 'Required fields are missing.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = 'Please enter a valid email address.';
+        } else {
+            try {
+                // Update employer profile
+                $stmt = mysqli_prepare($conn, "UPDATE employers SET company_name = ?, contact_person = ?, contact_email = ?, contact_number = ?, business_address = ?, industry = ? WHERE id = ?");
+                mysqli_stmt_bind_param($stmt, "ssssssi", $company_name, $contact_person, $email, $mobile, $business_address, $industry, $user_id);
+                if (mysqli_stmt_execute($stmt)) {
+                    $success = 'Profile updated successfully!';
+                    
+                    // Refresh user data
+                    $stmt = mysqli_prepare($conn, "SELECT id, company_name, contact_person, contact_email, contact_number, business_address, industry, created_at FROM employers WHERE id = ?");
+                    mysqli_stmt_bind_param($stmt, 'i', $user_id);
+                    mysqli_stmt_execute($stmt);
+                    $result = mysqli_stmt_get_result($stmt);
+                    $user_data = mysqli_fetch_assoc($result);
+                } else {
+                    $error = 'Failed to update profile.';
+                }
+            } catch (Exception $e) {
+                $error = 'Database error: ' . $e->getMessage();
+            }
+        }
+    }
+}
+
+// Determine dashboard template based on role
+$dashboard_template = '';
+switch ($user_role) {
+    case 'jobseeker':
+        $dashboard_template = '../templates/jobseeker.html';
+        break;
+    case 'employer':
+        $dashboard_template = '../templates/employer.html';
+        break;
+    case 'peso_officer':
+        $dashboard_template = '../templates/peso_officer.html';
+        break;
+    default:
+        header('Location: ../templates/login.html');
+        exit;
+}
+
+// Redirect to the appropriate dashboard template
+header('Location: ' . $dashboard_template);
+exit;
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - SkillBridge AI</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-
-        .dashboard-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: white;
-            border-radius: 12px;
-            padding: 20px 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            color: #333;
-            font-size: 24px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        .user-details h3 {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 2px;
-        }
-
-        .user-details p {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .logout-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: #c0392b;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-        }
-
-        .card h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        .card-icon {
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
-
-        .card-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .card-label {
-            color: #666;
-            font-size: 14px;
-        }
-
-        .profile-card {
-            grid-column: span 2;
-        }
-
-        .profile-info {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .info-item {
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-        }
-
-        .info-label {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            font-size: 14px;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .actions-card {
-            grid-column: span 2;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: transform 0.3s;
-        }
-
-        .action-btn:hover {
-            transform: scale(1.05);
-        }
-
-        .testing-tools {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .testing-tools h3 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .test-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .test-section h4 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .test-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            font-size: 12px;
-        }
-
-        .test-btn:hover {
-            background: #218838;
-        }
-
-        .test-result {
-            margin-top: 10px;
-            padding: 10px;
-            background: #e9ecef;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 12px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .profile-card, .actions-card {
-                grid-column: span 1;
-            }
-            
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .user-info {
-                flex-direction: column;
-                text-align: center;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- Header -->
-        <div class="header">
-            <h1>SkillBridge AI Dashboard</h1>
-            <div class="user-info">
-                <div class="user-avatar"><?php echo strtoupper(substr($user_name, 0, 1)); ?></div>
-                <div class="user-details">
-                    <h3><?php echo htmlspecialchars($user_name); ?></h3>
-                    <p><?php echo ucfirst($user_role); ?></p>
-                </div>
-                <form method="post" action="logout.php" style="display: inline;">
-                    <button type="submit" class="logout-btn">Logout</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Dashboard Grid -->
-        <div class="dashboard-grid">
-            <!-- Profile Card -->
-            <div class="card profile-card">
-                <h3><span class="card-icon">👤</span> Profile Information</h3>
-                <div class="profile-info">
-                    <?php if ($dashboard_data): ?>
-                        <?php foreach ($dashboard_data as $key => $value): ?>
-                            <?php if ($key !== 'password' && $key !== 'id' && $value): ?>
-                                <div class="info-item">
-                                    <div class="info-label"><?php echo ucfirst(str_replace('_', ' ', $key)); ?></div>
-                                    <div class="info-value"><?php echo htmlspecialchars($value); ?></div>
-                                </div>
-                            <?php endif; ?>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div class="info-item">
-                            <div class="info-value">No profile data available</div>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Stats Cards -->
-            <div class="card">
-                <h3><span class="card-icon">📊</span> Account Status</h3>
-                <div class="card-value">Active</div>
-                <div class="card-label">Since registration</div>
-            </div>
-
-            <div class="card">
-                <h3><span class="card-icon">🔔</span> Notifications</h3>
-                <div class="card-value">0</div>
-                <div class="card-label">New messages</div>
-            </div>
-
-            <!-- Actions Card -->
-            <div class="card actions-card">
-                <h3><span class="card-icon">⚡</span> Quick Actions</h3>
-                <div class="action-buttons">
-                    <?php if ($user_role === 'jobseeker'): ?>
-                        <button class="action-btn">📝 Update Profile</button>
-                        <button class="action-btn">💼 Browse Jobs</button>
-                        <button class="action-btn">📋 My Applications</button>
-                        <button class="action-btn">⚙️ Account Settings</button>
-                    <?php elseif ($user_role === 'employer'): ?>
-                        <button class="action-btn">📝 Post Job</button>
-                        <button class="action-btn">👥 Manage Applications</button>
-                        <button class="action-btn">📊 View Analytics</button>
-                        <button class="action-btn">⚙️ Company Settings</button>
-                    <?php elseif ($user_role === 'officer'): ?>
-                        <button class="action-btn">👥 Manage Users</button>
-                        <button class="action-btn">📊 Reports</button>
-                        <button class="action-btn">🔍 Verify Documents</button>
-                        <button class="action-btn">⚙️ System Settings</button>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-
-        <!-- Testing Tools -->
-        <div class="testing-tools">
-            <h3>🧪 Testing Tools</h3>
-            
-            <div class="test-section">
-                <h4>Session Information</h4>
-                <button class="test-btn" onclick="showSessionInfo()">Show Session Data</button>
-                <button class="test-btn" onclick="testSessionTimeout()">Test Session Timeout</button>
-                <div id="session-result" class="test-result" style="display: none;"></div>
-            </div>
-
-            <div class="test-section">
-                <h4>Database Connection</h4>
-                <button class="test-btn" onclick="testDatabase()">Test DB Connection</button>
-                <button class="test-btn" onclick="testUserQuery()">Test User Query</button>
-                <div id="db-result" class="test-result" style="display: none;"></div>
-            </div>
-
-            <div class="test-section">
-                <h4>Registration Flow</h4>
-                <button class="test-btn" onclick="window.open('test_register_form.php', '_blank')">Test Registration</button>
-                <button class="test-btn" onclick="window.open('register.html', '_blank')">Live Registration</button>
-                <button class="test-btn" onclick="createTestUser()">Create Test User</button>
-                <div id="reg-result" class="test-result" style="display: none;"></div>
-            </div>
-
-            <div class="test-section">
-                <h4>System Info</h4>
-                <button class="test-btn" onclick="showSystemInfo()">Show PHP Info</button>
-                <button class="test-btn" onclick="checkPermissions()">Check Permissions</button>
-                <div id="sys-result" class="test-result" style="display: none;"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function showSessionInfo() {
-            fetch('test_session.php')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('session-result').style.display = 'block';
-                    document.getElementById('session-result').textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    document.getElementById('session-result').style.display = 'block';
-                    document.getElementById('session-result').textContent = 'Error: ' + error.message;
-                });
-        }
-
-        function testSessionTimeout() {
-            document.getElementById('session-result').style.display = 'block';
-            document.getElementById('session-result').textContent = 'Session timeout test - session will expire in 24 hours or when browser closes';
-        }
-
-        function testDatabase() {
-            fetch('test_db_connection.php')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('db-result').style.display = 'block';
-                    document.getElementById('db-result').textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    document.getElementById('db-result').style.display = 'block';
-                    document.getElementById('db-result').textContent = 'Error: ' + error.message;
-                });
-        }
-
-        function testUserQuery() {
-            fetch('test_user_query.php')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('db-result').style.display = 'block';
-                    document.getElementById('db-result').textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    document.getElementById('db-result').style.display = 'block';
-                    document.getElementById('db-result').textContent = 'Error: ' + error.message;
-                });
-        }
-
-        function createTestUser() {
-            fetch('create_test_user.php')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('reg-result').style.display = 'block';
-                    document.getElementById('reg-result').textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    document.getElementById('reg-result').style.display = 'block';
-                    document.getElementById('reg-result').textContent = 'Error: ' + error.message;
-                });
-        }
-
-        function showSystemInfo() {
-            document.getElementById('sys-result').style.display = 'block';
-            document.getElementById('sys-result').innerHTML = `
-                PHP Version: <?php echo PHP_VERSION; ?><br>
-                Server Time: <?php echo date('Y-m-d H:i:s'); ?><br>
-                User Agent: <?php echo htmlspecialchars($_SERVER['HTTP_USER_AGENT']); ?><br>
-                Session ID: <?php echo session_id(); ?><br>
-                Max Upload Size: <?php echo ini_get('upload_max_filesize'); ?><br>
-                Post Max Size: <?php echo ini_get('post_max_size'); ?>
-            `;
-        }
-
-        function checkPermissions() {
-            fetch('check_permissions.php')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('sys-result').style.display = 'block';
-                    document.getElementById('sys-result').textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    document.getElementById('sys-result').style.display = 'block';
-                    document.getElementById('sys-result').textContent = 'Error: ' + error.message;
-                });
-        }
-    </script>
-</body>
-</html>

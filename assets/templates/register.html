@@ -4,20 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Account – SkillBridge AI | PESO Bago City</title>
-  <link rel="stylesheet" href="../assets/css/register.css" />
+  <link rel="stylesheet" href="/Skillbridge/assets/css/register.css" />
 </head>
 <body>
 
   <div class="reg-header">
     <div class="reg-header-inner">
       <div class="reg-brand">
-        <img src="logo-peso.png" alt="PESO Logo" class="reg-logo" />
+        <img src="/Skillbridge/assets/images/logo-peso.png" alt="PESO Logo" class="reg-logo" />
         <div>
           <div class="reg-brand-name">SkillBridge AI</div>
           <div class="reg-brand-sub">PESO Bago City · Inclusive Job Matching Platform</div>
         </div>
       </div>
-      <a href="login.html" class="reg-login-link">Already have an account? <strong>Log In</strong></a>
+      <a href="/Skillbridge/assets/templates/login.html" class="reg-login-link">Already have an account? <strong>Log In</strong></a>
     </div>
   </div>
 
@@ -871,7 +871,7 @@
       formData.append('email', isEmail ? contact : '');
       formData.append('mobile', isMobile ? contact : '');
       
-      fetch('../assets/php/email_verifier.php', {
+      fetch('/Skillbridge/assets/php/email_verifier.php', {
         method: 'POST',
         body: formData
       })
@@ -916,7 +916,7 @@
       formData.append('action', 'verify_code');
       formData.append('code', code);
       
-      fetch('../assets/php/email_verifier.php', {
+      fetch('/Skillbridge/assets/php/email_verifier.php', {
         method: 'POST',
         body: formData
       })
@@ -1084,13 +1084,13 @@
       btn.disabled = true;
       btn.textContent = 'Submitting...';
 
-      fetch('../assets/php/register.php', { method:'POST', body: new FormData(form) })
+      fetch('/Skillbridge/assets/php/register.php', { method:'POST', body: new FormData(form) })
         .then(r => r.json())
         .then(data => {
           showMsg(msgEl, data.success ? 'success' : 'error', data.message);
           if (data.success) {
             form.reset();
-            setTimeout(() => window.location.href = 'login.html', 2000);
+            setTimeout(() => window.location.href = '/Skillbridge/assets/templates/login.html', 2000);
           }
         })
         .catch(() => showMsg(msgEl, 'error', 'An unexpected error occurred. Please try again.'))

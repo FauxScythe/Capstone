@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employer Dashboard – SkillBridge AI</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/employer.css" />
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <header class="em-topbar">
+    <div class="em-topbar-inner">
+      <div class="em-brand">
+        <svg class="em-brand-logo" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 26 Q18 8 32 26" stroke="#c0392b" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+          <line x1="4" y1="26" x2="32" y2="26" stroke="#c0392b" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="12" y1="26" x2="12" y2="19" stroke="#c0392b" stroke-width="2" stroke-linecap="round"/>
+          <line x1="18" y1="26" x2="18" y2="14" stroke="#c0392b" stroke-width="2" stroke-linecap="round"/>
+          <line x1="24" y1="26" x2="24" y2="19" stroke="#c0392b" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="19" r="2" fill="#1b2a4a"/>
+          <circle cx="18" cy="14" r="2" fill="#1b2a4a"/>
+          <circle cx="24" cy="19" r="2" fill="#1b2a4a"/>
+          <circle cx="4"  cy="26" r="2" fill="#c0392b"/>
+          <circle cx="32" cy="26" r="2" fill="#c0392b"/>
+        </svg>
+        <span class="em-brand-name">SkillBridge AI</span>
+      </div>
+      <nav class="em-nav" id="em-nav">
+        <button class="em-nav-link active" onclick="showPage('dashboard',this)">Home</button>
+        <button class="em-nav-link" onclick="showPage('vacancies',this)">Vacancies</button>
+        <button class="em-nav-link" onclick="showPage('candidates',this)">Candidates</button>
+        <button class="em-nav-link" onclick="showPage('interviews',this)">Interviews</button>
+        <button class="em-nav-link" onclick="showPage('reports',this)">Reports</button>
+      </nav>
+      <button class="em-mobile-btn" onclick="document.getElementById('em-nav').classList.toggle('open')">☰</button>
+      <div class="em-topbar-right">
+        <div class="em-user-menu" onclick="toggleDropdown()">
+          <div class="em-avatar"><i class="fa-solid fa-building"></i></div>
+          <span class="em-username" id="em-username">Company</span>
+          <i class="fa-solid fa-chevron-down" style="font-size:10px;color:#666;"></i>
+        </div>
+        <div class="em-dropdown" id="em-dropdown">
+          <a href="#" onclick="showPage('profile',null);closeDropdown()"><i class="fa-solid fa-building"></i> Company Profile</a>
+          <div style="height:1px;background:#e5e5e5;margin:4px 0;"></div>
+          <a href="#" onclick="doLogout(event)" style="color:#c0392b;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <canvas id="em-canvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
+
+  <main class="em-main" style="position:relative;z-index:1;">
+
+    <!-- HOME DASHBOARD -->
+    <section id="page-dashboard" class="em-page active">
+      <div class="em-hero-banner">
+        <img src="../images/bangon bago.jpg" alt="" class="em-hero-bg-img" />
+        <div class="em-hero-text">
+          <p class="em-hero-eyebrow">SkillBridge AI · Employer Portal</p>
+          <h1 id="em-hero-welcome">Welcome, Employer</h1>
+          <p class="em-hero-sub">Post jobs and let our AI match you with verified, qualified candidates from Bago City.</p>
+          <button class="em-btn-primary" onclick="showPage('vacancies',null);showModal('modal-vacancy')">
+            <i class="fa-solid fa-plus"></i> Post a Job Vacancy
+          </button>
+        </div>
+      </div>
+      <div class="em-container">
+        <div class="em-stats-row">
+          <div class="em-stat-card" onclick="showPage('vacancies',null)">
+            <div class="em-stat-icon"><i class="fa-regular fa-briefcase"></i></div>
+            <div class="em-stat-num" id="stat-vacancies">0</div>
+            <div class="em-stat-label">Active Vacancies</div>
+          </div>
+          <div class="em-stat-card" onclick="showPage('candidates',null)">
+            <div class="em-stat-icon"><i class="fa-regular fa-users"></i></div>
+            <div class="em-stat-num" id="stat-matches">0</div>
+            <div class="em-stat-label">AI Matches</div>
+          </div>
+          <div class="em-stat-card">
+            <div class="em-stat-icon"><i class="fa-regular fa-file-lines"></i></div>
+            <div class="em-stat-num" id="stat-applications">0</div>
+            <div class="em-stat-label">Applications</div>
+          </div>
+          <div class="em-stat-card" onclick="showPage('interviews',null)">
+            <div class="em-stat-icon"><i class="fa-regular fa-calendar"></i></div>
+            <div class="em-stat-num" id="stat-interviews">0</div>
+            <div class="em-stat-label">Interviews</div>
+          </div>
+          <div class="em-stat-card">
+            <div class="em-stat-icon"><i class="fa-regular fa-circle-check"></i></div>
+            <div class="em-stat-num" id="stat-hired">0</div>
+            <div class="em-stat-label">Hired</div>
+          </div>
+          <div class="em-stat-card">
+            <div class="em-stat-icon"><i class="fa-solid fa-wheelchair"></i></div>
+            <div class="em-stat-num" id="stat-pwd">0</div>
+            <div class="em-stat-label">PWD Hires</div>
+          </div>
+        </div>
+        <div class="em-grid-2">
+          <div class="em-card">
+            <div class="em-card-header"><h3>Recent AI-Matched Candidates</h3><span class="em-badge">0 new</span></div>
+            <div class="em-empty"><i class="fa-regular fa-lightbulb"></i><p>No candidates matched yet</p><small>Post a vacancy to receive AI recommendations.</small></div>
+          </div>
+          <div class="em-card">
+            <div class="em-card-header"><h3>Upcoming Interviews</h3><span class="em-badge">0 scheduled</span></div>
+            <div class="em-empty"><i class="fa-regular fa-calendar"></i><p>No interviews scheduled</p></div>
+          </div>
+        </div>
+        <div class="em-grid-2">
+          <div class="em-card">
+            <div class="em-card-header">
+              <h3>Active Job Vacancies</h3>
+              <a href="#" onclick="showPage('vacancies',null)" style="font-size:13px;font-weight:700;color:var(--red);">View All →</a>
+            </div>
+            <div id="dash-job-list"><div class="em-empty"><i class="fa-regular fa-briefcase"></i><p>No active vacancies posted</p></div></div>
+          </div>
+          <div class="em-card">
+            <div class="em-card-header"><h3>Application Status</h3></div>
+            <div class="em-status-row"><span>Referred by PESO</span><span class="em-badge-num">0</span></div>
+            <div class="em-status-row"><span>For Interview</span><span class="em-badge-num">0</span></div>
+            <div class="em-status-row"><span>Hired</span><span class="em-badge-num green">0</span></div>
+            <div class="em-status-row"><span>Not Selected</span><span class="em-badge-num red">0</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VACANCIES -->
+    <section id="page-vacancies" class="em-page">
+      <div class="em-container">
+        <div class="em-page-header">
+          <h2><i class="fa-regular fa-briefcase"></i> Job Vacancies</h2>
+          <button class="em-btn-primary" onclick="showModal('modal-vacancy')"><i class="fa-solid fa-plus"></i> Post New Vacancy</button>
+        </div>
+        <div class="em-card">
+          <div class="em-card-header">
+            <div class="em-filters">
+              <input type="text" id="vacancy-search" placeholder="Search vacancies..." class="em-filter-input" oninput="filterVacancies()" autocomplete="off" />
+              <select class="em-filter-select" id="vacancy-status-filter" onchange="filterVacancies()">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="filled">Filled</option>
+                <option value="expired">Expired</option>
+              </select>
+            </div>
+          </div>
+          <table class="em-table" id="vacancies-table">
+            <thead>
+              <tr>
+                <th>Position</th><th>Type</th><th>Slots</th><th>PWD Friendly</th>
+                <th>Status</th><th>Posted</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="vacancies-tbody">
+              <tr><td colspan="7"><div class="em-empty"><i class="fa-regular fa-briefcase"></i><p>No vacancies posted yet.</p><small>Click "+ Post New Vacancy" to start.</small></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- CANDIDATES -->
+    <section id="page-candidates" class="em-page">
+      <div class="em-container">
+        <div class="em-page-header">
+          <h2><i class="fa-regular fa-users"></i> Candidate Discovery</h2>
+          <span class="em-badge">SkillBridge AI</span>
+        </div>
+        <div class="em-card">
+          <div class="em-card-header">
+            <div class="em-filters">
+              <input type="text" placeholder="Search candidates..." class="em-filter-input" autocomplete="off" />
+              <select class="em-filter-select"><option>All Vacancies</option></select>
+              <select class="em-filter-select"><option>All Types</option><option>Regular</option><option>PWD</option></select>
+            </div>
+          </div>
+          <table class="em-table">
+            <thead><tr><th>Candidate</th><th>Type</th><th>Skills</th><th>Education</th><th>Match Score</th><th>ID Status</th><th>Actions</th></tr></thead>
+            <tbody><tr><td colspan="7"><div class="em-empty"><i class="fa-regular fa-users"></i><p>No matched candidates yet.</p><small>Post a vacancy to receive AI recommendations.</small></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- INTERVIEWS -->
+    <section id="page-interviews" class="em-page">
+      <div class="em-container">
+        <div class="em-page-header">
+          <h2><i class="fa-regular fa-calendar"></i> Interviews</h2>
+          <button class="em-btn-primary" onclick="showModal('modal-interview')"><i class="fa-solid fa-plus"></i> Schedule Interview</button>
+        </div>
+        <div class="em-card">
+          <table class="em-table">
+            <thead><tr><th>Candidate</th><th>Position</th><th>Date & Time</th><th>Mode</th><th>Accessibility Need</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody><tr><td colspan="7"><div class="em-empty"><i class="fa-regular fa-calendar"></i><p>No interviews scheduled yet</p></div></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- REPORTS -->
+    <section id="page-reports" class="em-page">
+      <div class="em-container">
+        <div class="em-page-header"><h2><i class="fa-regular fa-file-lines"></i> Compliance Reports</h2></div>
+        <div class="em-reports-grid">
+          <div class="em-report-card">
+            <div class="em-report-icon"><i class="fa-solid fa-wheelchair"></i></div>
+            <h3>PWD Hiring Compliance</h3>
+            <p>Summary of PWD hires, accommodations provided, and inclusive hiring metrics required by DOLE.</p>
+            <button class="em-btn-primary" onclick="showReportModal('PWD Hiring Compliance Report','No data available yet — post vacancies and hire candidates to generate this report.')">Generate Report</button>
+          </div>
+          <div class="em-report-card">
+            <div class="em-report-icon"><i class="fa-regular fa-file-lines"></i></div>
+            <h3>Hiring Activity Report</h3>
+            <p>Overview of all job postings, applications received, interviews conducted, and hiring outcomes.</p>
+            <button class="em-btn-primary" onclick="showReportModal('Hiring Activity Report','No activity recorded yet.')">Generate Report</button>
+          </div>
+          <div class="em-report-card">
+            <div class="em-report-icon"><i class="fa-regular fa-lightbulb"></i></div>
+            <h3>AI Match Utilization</h3>
+            <p>Analytics on AI-recommended candidates, acceptance rates, and matching accuracy.</p>
+            <button class="em-btn-primary" onclick="showReportModal('AI Match Utilization Report','No matches recorded yet — post a vacancy to start receiving AI recommendations.')">Generate Report</button>
+          </div>
+          <div class="em-report-card">
+            <div class="em-report-icon"><i class="fa-regular fa-chart-bar"></i></div>
+            <h3>Workforce Analytics</h3>
+            <p>Breakdown of hired candidates by skill, education, sector, and PWD status.</p>
+            <button class="em-btn-primary" onclick="showReportModal('Workforce Analytics Report','No hiring data available yet.')">Generate Report</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPANY PROFILE -->
+    <section id="page-profile" class="em-page">
+      <div class="em-container">
+        <div class="em-page-header"><h2><i class="fa-solid fa-building"></i> Company Profile</h2></div>
+        <div class="em-profile-wrap">
+          <!-- Info card -->
+          <div>
+            <div class="em-profile-cover">
+              <img src="../images/logo-peso.png" alt="Cover" />
+            </div>
+            <div class="em-profile-info-card">
+              <div class="em-profile-avatar"><i class="fa-solid fa-building"></i></div>
+              <h2 id="profile-company-name">Company Name</h2>
+              <p id="profile-industry-loc">Industry · Bago City</p>
+              <span class="em-accredited"><i class="fa-solid fa-circle-check"></i> Accredited by PESO</span>
+              <div class="em-profile-meta">
+                <span><i class="fa-regular fa-envelope"></i> <span id="profile-email">—</span></span>
+                <span><i class="fa-solid fa-phone"></i> <span id="profile-phone">—</span></span>
+                <span><i class="fa-solid fa-location-dot"></i> <span id="profile-address">Bago City</span></span>
+              </div>
+            </div>
+          </div>
+          <!-- Edit form -->
+          <div class="em-card">
+            <h3 class="em-form-title">Edit Company Information</h3>
+            <div class="em-form-grid">
+              <div class="em-form-group">
+                <label>Company Name</label>
+                <input id="f-company-name" type="text" placeholder="Company Name" autocomplete="off" />
+              </div>
+              <div class="em-form-group">
+                <label>Industry</label>
+                <select id="f-industry">
+                  <option value="">Select Industry</option>
+                  <option>Retail / Trade</option><option>Manufacturing</option>
+                  <option>Healthcare</option><option>IT / Technology</option>
+                  <option>Education</option><option>Government</option>
+                  <option>Agriculture</option><option>Construction</option><option>Others</option>
+                </select>
+              </div>
+              <div class="em-form-group">
+                <label>Contact Person</label>
+                <input id="f-contact-person" type="text" placeholder="HR Manager Name" autocomplete="off" />
+              </div>
+              <div class="em-form-group">
+                <label>Contact Number</label>
+                <input id="f-phone" type="tel" placeholder="09XX-XXX-XXXX" autocomplete="off" />
+              </div>
+              <div class="em-form-group">
+                <label>Email Address</label>
+                <input id="f-email" type="email" placeholder="hr@company.com" autocomplete="off" />
+              </div>
+              <div class="em-form-group">
+                <label>Company Size</label>
+                <select id="f-company-size">
+                  <option value="">Select Size</option>
+                  <option>Micro (1–9)</option><option>Small (10–99)</option>
+                  <option>Medium (100–199)</option><option>Large (200+)</option>
+                </select>
+              </div>
+            </div>
+            <div class="em-form-group">
+              <label>Business Address</label>
+              <input id="f-address" type="text" placeholder="Complete business address" autocomplete="off" />
+            </div>
+            <div class="em-form-group">
+              <label>Workplace Accessibility Features</label>
+              <textarea id="f-accessibility" rows="2" placeholder="e.g. Ramps, accessible restrooms, remote work options..."></textarea>
+            </div>
+            <div class="em-form-group">
+              <label>Inclusive Hiring Practice</label>
+              <div class="em-radio-group">
+                <label><input type="radio" name="inclusive" value="yes" /> Yes</label>
+                <label><input type="radio" name="inclusive" value="no" /> No</label>
+                <label><input type="radio" name="inclusive" value="planning" /> Planning to</label>
+              </div>
+            </div>
+            <button class="em-btn-primary" onclick="saveProfile()">
+              <i class="fa-solid fa-floppy-disk"></i> Save Changes
+            </button>
+
+            <h3 class="em-form-title" style="margin-top:28px;">Change Password</h3>
+            <div class="em-form-grid">
+              <div class="em-form-group">
+                <label>Current Password</label>
+                <input id="f-cur-pass" type="password" placeholder="Current password" />
+              </div>
+              <div class="em-form-group">
+                <label>New Password</label>
+                <input id="f-new-pass" type="password" placeholder="New password (min 8 chars, 1 uppercase, 1 number)" />
+              </div>
+            </div>
+            <button class="em-btn-primary" onclick="changePassword()">
+              <i class="fa-solid fa-key"></i> Update Password
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /em-main -->
+
+  <!-- ── MODALS ─────────────────────────────────────────────────────────────── -->
+
+  <!-- Post Vacancy Modal -->
+  <div id="modal-vacancy" class="em-modal-backdrop" onclick="if(event.target===this)closeModal('modal-vacancy')">
+    <div class="em-modal-box">
+      <button class="em-modal-close" onclick="closeModal('modal-vacancy')">✕</button>
+      <h2 class="em-modal-title">Post New Job Vacancy</h2>
+      <div class="em-form-group">
+        <label>Position / Job Title *</label>
+        <input id="v-title" type="text" placeholder="e.g. Data Encoder, Utility Worker" autocomplete="off" />
+      </div>
+      <div class="em-form-grid">
+        <div class="em-form-group">
+          <label>Number of Slots *</label>
+          <input id="v-slots" type="number" placeholder="1" min="1" value="1" />
+        </div>
+        <div class="em-form-group">
+          <label>Employment Type *</label>
+          <select id="v-type">
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Seasonal">Seasonal</option>
+          </select>
+        </div>
+      </div>
+      <div class="em-form-group">
+        <label>Required Skills *</label>
+        <input id="v-skills" type="text" placeholder="e.g. MS Office, Customer Service, Driving" autocomplete="off" />
+      </div>
+      <div class="em-form-group">
+        <label>Job Description *</label>
+        <textarea id="v-desc" rows="3" placeholder="Describe the role and responsibilities..."></textarea>
+      </div>
+      <div class="em-form-group">
+        <label>PWD Friendly?</label>
+        <div class="em-radio-group">
+          <label><input type="radio" name="v-pwd" value="1" /> Yes</label>
+          <label><input type="radio" name="v-pwd" value="0" checked /> No</label>
+        </div>
+      </div>
+      <div class="em-form-group" id="v-access-wrap" style="display:none;">
+        <label>Accessibility Accommodations</label>
+        <input id="v-accessibility" type="text" placeholder="e.g. Sign language interpreter, wheelchair ramp" autocomplete="off" />
+      </div>
+      <div class="em-modal-actions">
+        <button class="em-btn-primary" onclick="postJob()"><i class="fa-solid fa-paper-plane"></i> Post Vacancy</button>
+        <button class="em-btn-sm" onclick="closeModal('modal-vacancy')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schedule Interview Modal -->
+  <div id="modal-interview" class="em-modal-backdrop" onclick="if(event.target===this)closeModal('modal-interview')">
+    <div class="em-modal-box">
+      <button class="em-modal-close" onclick="closeModal('modal-interview')">✕</button>
+      <h2 class="em-modal-title">Schedule Interview</h2>
+      <div class="em-form-group">
+        <label>Candidate Name</label>
+        <input type="text" placeholder="Candidate full name" autocomplete="off" />
+      </div>
+      <div class="em-form-group">
+        <label>Position Applied For</label>
+        <select id="interview-position"><option value="">Select Vacancy</option></select>
+      </div>
+      <div class="em-form-grid">
+        <div class="em-form-group"><label>Date *</label><input type="date" /></div>
+        <div class="em-form-group"><label>Time *</label><input type="time" /></div>
+      </div>
+      <div class="em-form-group">
+        <label>Interview Mode</label>
+        <div class="em-radio-group">
+          <label><input type="radio" name="imode" value="Online" /> Online</label>
+          <label><input type="radio" name="imode" value="On-site" checked /> On-site</label>
+        </div>
+      </div>
+      <div class="em-form-group">
+        <label>Accessibility Accommodation Needed</label>
+        <input type="text" placeholder="e.g. Sign language interpreter, captioning" autocomplete="off" />
+      </div>
+      <div class="em-modal-actions">
+        <button class="em-btn-primary"><i class="fa-solid fa-calendar-check"></i> Schedule Interview</button>
+        <button class="em-btn-sm" onclick="closeModal('modal-interview')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Modal -->
+  <div id="modal-report" class="em-modal-backdrop" onclick="if(event.target===this)closeModal('modal-report')">
+    <div class="em-modal-box">
+      <button class="em-modal-close" onclick="closeModal('modal-report')">✕</button>
+      <h2 class="em-modal-title" id="report-title">Report</h2>
+      <p id="report-body" style="font-size:14px;color:#555;line-height:1.7;margin-bottom:20px;"></p>
+      <div style="background:#f9f9f9;border:1.5px dashed #e5e5e5;border-radius:10px;padding:32px;text-align:center;color:#aaa;margin-bottom:20px;">
+        <i class="fa-regular fa-chart-bar" style="font-size:2rem;display:block;margin-bottom:8px;"></i>
+        <p style="font-size:13px;font-weight:600;color:#777;">No data available yet to generate this report.</p>
+      </div>
+      <div class="em-modal-actions">
+        <button class="em-btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Report</button>
+        <button class="em-btn-sm" onclick="closeModal('modal-report')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Background canvas animation ──────────────────────────────────────────
+    const canvas = document.getElementById('em-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [];
+    function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    const palette = ['#c0392b','#e74c3c','#1b2a4a','#2c3e6b','#f0c040','#f39c12','#8e44ad','#2980b9','#27ae60'];
+    function rand(a,b){ return Math.random()*(b-a)+a; }
+    function Particle(){ this.reset(); }
+    Particle.prototype.reset = function(){
+      this.x=rand(0,W); this.y=rand(0,H); this.r=rand(8,28);
+      this.dx=(Math.random()-.5)*1.6; this.dy=(Math.random()-.5)*1.6;
+      this.color=palette[Math.floor(Math.random()*palette.length)];
+      this.alpha=rand(.12,.28); this.type=Math.floor(Math.random()*4);
+      this.rot=rand(0,Math.PI*2); this.rotSpeed=(Math.random()-.5)*.03;
+      this.pulse=rand(0,Math.PI*2); this.pulseSpeed=rand(.02,.05);
+    };
+    Particle.prototype.draw = function(){
+      ctx.save(); ctx.globalAlpha=this.alpha; ctx.fillStyle=this.color; ctx.strokeStyle=this.color; ctx.lineWidth=2;
+      ctx.translate(this.x,this.y); ctx.rotate(this.rot);
+      const r=this.r+Math.sin(this.pulse)*3;
+      if(this.type===0){ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fill();}
+      else if(this.type===1){ctx.beginPath();ctx.rect(-r,-r,r*2,r*2);ctx.fill();}
+      else if(this.type===2){ctx.beginPath();ctx.moveTo(0,-r);ctx.lineTo(r,r);ctx.lineTo(-r,r);ctx.closePath();ctx.fill();}
+      else{ctx.beginPath();for(let i=0;i<6;i++){const a=(Math.PI/3)*i;i===0?ctx.moveTo(r*Math.cos(a),r*Math.sin(a)):ctx.lineTo(r*Math.cos(a),r*Math.sin(a));}ctx.closePath();ctx.stroke();}
+      ctx.restore();
+    };
+    Particle.prototype.update = function(){
+      this.x+=this.dx; this.y+=this.dy; this.rot+=this.rotSpeed; this.pulse+=this.pulseSpeed;
+      if(this.x<-50)this.x=W+50; if(this.x>W+50)this.x=-50;
+      if(this.y<-50)this.y=H+50; if(this.y>H+50)this.y=-50;
+    };
+    for(let i=0;i<80;i++) particles.push(new Particle());
+    function drawBg(){ const g=ctx.createLinearGradient(0,0,W,H); g.addColorStop(0,'#fdf5f5'); g.addColorStop(.5,'#f5f0ff'); g.addColorStop(1,'#f0f4ff'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); }
+    function animate(){ drawBg(); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
+    animate();
+
+    // ── Logout ───────────────────────────────────────────────────────────────
+    function doLogout(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) {
+        window.location.href = '../php/logout.php';
+      }
+    }
+
+    // ── Navigation ───────────────────────────────────────────────────────────
+    function showPage(id, el) {
+      document.querySelectorAll('.em-page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.em-nav-link').forEach(n => n.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      if (el) el.classList.add('active');
+      closeDropdown();
+    }
+    function toggleDropdown(){ document.getElementById('em-dropdown').classList.toggle('open'); }
+    function closeDropdown(){ document.getElementById('em-dropdown').classList.remove('open'); }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.em-topbar-right')) closeDropdown();
+    });
+
+    // ── Modals ───────────────────────────────────────────────────────────────
+    function showModal(id){ document.getElementById(id).style.display='flex'; }
+    function closeModal(id){ document.getElementById(id).style.display='none'; }
+    function showReportModal(title, body){
+      document.getElementById('report-title').textContent = title;
+      document.getElementById('report-body').textContent  = body;
+      showModal('modal-report');
+    }
+
+    // Toggle accessibility field based on PWD radio
+    document.querySelectorAll('input[name="v-pwd"]').forEach(r => {
+      r.addEventListener('change', () => {
+        document.getElementById('v-access-wrap').style.display = r.value === '1' ? 'block' : 'none';
+      });
+    });
+  </script>
+
+  <script>
+    // ── Load employer data ───────────────────────────────────────────────────
+    let allJobs = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('../php/employer_dashboard.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success) {
+          if (data.message && data.message.includes('log in')) window.location.href = 'login.html';
+          return;
+        }
+        const u = data.user;
+
+        // Topbar & hero
+        document.getElementById('em-username').textContent    = u.company_name || 'Company';
+        document.getElementById('em-hero-welcome').textContent = 'Welcome, ' + (u.company_name || 'Employer');
+
+        // Profile info card
+        document.getElementById('profile-company-name').textContent = u.company_name || '';
+        document.getElementById('profile-industry-loc').textContent  = (u.industry || 'Industry') + ' · Bago City';
+        document.getElementById('profile-email').textContent   = u.email   || '—';
+        document.getElementById('profile-phone').textContent   = u.phone   || '—';
+        document.getElementById('profile-address').textContent = u.address || 'Bago City';
+
+        // Profile edit form
+        const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+        const setSelect = (id, val) => {
+          const el = document.getElementById(id); if (!el || !val) return;
+          for (let o of el.options) { if (o.value === val || o.text === val) { o.selected = true; break; } }
+        };
+        set('f-company-name',   u.company_name);
+        set('f-contact-person', u.contact_person);
+        set('f-phone',          u.phone);
+        set('f-email',          u.email);
+        set('f-address',        u.address);
+        set('f-accessibility',  u.accessibility_features);
+        setSelect('f-industry',      u.industry);
+        setSelect('f-company-size',  u.company_size);
+
+        // Inclusive hiring radio
+        if (u.inclusive_hiring) {
+          const r = document.querySelector(`input[name="inclusive"][value="${u.inclusive_hiring}"]`);
+          if (r) r.checked = true;
+        }
+
+        // Load vacancies
+        loadJobs();
+      })
+      .catch(err => console.error('Error loading employer data:', err));
+    });
+
+    // ── Job Vacancies ────────────────────────────────────────────────────────
+    function postJob() {
+      const title       = document.getElementById('v-title').value.trim();
+      const slots       = document.getElementById('v-slots').value || 1;
+      const type        = document.getElementById('v-type').value;
+      const skills      = document.getElementById('v-skills').value.trim();
+      const desc        = document.getElementById('v-desc').value.trim();
+      const pwdEl       = document.querySelector('input[name="v-pwd"]:checked');
+      const pwd         = pwdEl ? pwdEl.value : '0';
+      const access      = document.getElementById('v-accessibility').value.trim();
+
+      if (!title || !skills || !desc) { alert('Please fill in all required fields.'); return; }
+
+      const fd = new FormData();
+      fd.append('action', 'post_job');
+      fd.append('title', title); fd.append('slots', slots);
+      fd.append('employment_type', type); fd.append('required_skills', skills);
+      fd.append('description', desc); fd.append('pwd_friendly', pwd);
+      fd.append('accessibility', access);
+
+      fetch('/Skillbridge/assets/php/job_posting.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            closeModal('modal-vacancy');
+            // Reset form
+            ['v-title','v-skills','v-desc','v-accessibility'].forEach(id => document.getElementById(id).value = '');
+            document.getElementById('v-slots').value = 1;
+            loadJobs();
+          } else { alert('Error: ' + data.message); }
+        })
+        .catch(() => alert('Failed to post job. Please try again.'));
+    }
+
+    function loadJobs() {
+      fetch('/Skillbridge/assets/php/job_posting.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ action: 'get_jobs' })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) { allJobs = data.jobs; renderVacancies(allJobs); updateDashStats(allJobs); }
+      })
+      .catch(err => console.error('Error loading jobs:', err));
+    }
+
+    function renderVacancies(jobs) {
+      const tbody = document.getElementById('vacancies-tbody');
+      if (!jobs.length) {
+        tbody.innerHTML = '<tr><td colspan="7"><div class="em-empty"><i class="fa-regular fa-briefcase"></i><p>No vacancies posted yet.</p><small>Click "+ Post New Vacancy" to start.</small></div></td></tr>';
+        document.getElementById('dash-job-list').innerHTML = '<div class="em-empty"><i class="fa-regular fa-briefcase"></i><p>No active vacancies posted</p></div>';
+        return;
+      }
+      tbody.innerHTML = jobs.map(j => `
+        <tr>
+          <td><strong>${j.title}</strong><br><small style="color:#888">${j.description.substring(0,60)}...</small></td>
+          <td>${j.employment_type}</td>
+          <td>${j.slots}</td>
+          <td>${j.pwd_friendly == 1 ? '<span class="em-pwd-badge">♿ Yes</span>' : '—'}</td>
+          <td><span class="em-status-badge ${j.status}">${j.status}</span></td>
+          <td>${new Date(j.posted_date).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</td>
+          <td>
+            <button class="em-btn-sm" onclick="deleteJob(${j.id})"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>`).join('');
+
+      // Dashboard preview (first 3 active)
+      const active = jobs.filter(j => j.status === 'active').slice(0, 3);
+      document.getElementById('dash-job-list').innerHTML = active.length
+        ? active.map(j => `<div class="em-dash-job"><span class="em-status-badge active">active</span> <strong>${j.title}</strong> <small>(${j.slots} slot${j.slots>1?'s':''})</small></div>`).join('')
+        : '<div class="em-empty"><i class="fa-regular fa-briefcase"></i><p>No active vacancies</p></div>';
+
+      // Populate interview vacancy select
+      const sel = document.getElementById('interview-position');
+      sel.innerHTML = '<option value="">Select Vacancy</option>' + jobs.map(j => `<option value="${j.id}">${j.title}</option>`).join('');
+    }
+
+    function filterVacancies() {
+      const q      = document.getElementById('vacancy-search').value.toLowerCase();
+      const status = document.getElementById('vacancy-status-filter').value;
+      const filtered = allJobs.filter(j =>
+        (!q || j.title.toLowerCase().includes(q) || j.required_skills.toLowerCase().includes(q)) &&
+        (!status || j.status === status)
+      );
+      renderVacancies(filtered);
+    }
+
+    function deleteJob(id) {
+      if (!confirm('Delete this vacancy?')) return;
+      const fd = new FormData();
+      fd.append('action', 'delete_job'); fd.append('job_id', id);
+      fetch('/Skillbridge/assets/php/job_posting.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => { if (data.success) loadJobs(); else alert(data.message); });
+    }
+
+    function updateDashStats(jobs) {
+      document.getElementById('stat-vacancies').textContent = jobs.filter(j => j.status === 'active').length;
+    }
+
+    // ── Save Profile ─────────────────────────────────────────────────────────
+    function saveProfile() {
+      const inclusive = document.querySelector('input[name="inclusive"]:checked')?.value || '';
+      const fd = new FormData();
+      fd.append('action',               'update_profile');
+      fd.append('company_name',         document.getElementById('f-company-name').value);
+      fd.append('contact_person',       document.getElementById('f-contact-person').value);
+      fd.append('contact_number',       document.getElementById('f-phone').value);
+      fd.append('contact_email',        document.getElementById('f-email').value);
+      fd.append('business_address',     document.getElementById('f-address').value);
+      fd.append('industry',             document.getElementById('f-industry').value);
+      fd.append('company_size',         document.getElementById('f-company-size').value);
+      fd.append('accessibility_features', document.getElementById('f-accessibility').value);
+      fd.append('inclusive_hiring',     inclusive);
+
+      fetch('../php/employer_dashboard.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => alert(data.success ? 'Profile saved.' : 'Error: ' + data.message))
+        .catch(() => alert('Failed to save. Please try again.'));
+    }
+
+    // ── Change Password ───────────────────────────────────────────────────────
+    function changePassword() {
+      const cur = document.getElementById('f-cur-pass').value;
+      const nw  = document.getElementById('f-new-pass').value;
+      if (!cur || !nw) { alert('Please fill in both password fields.'); return; }
+      const fd = new FormData();
+      fd.append('action', 'change_password');
+      fd.append('current_password', cur);
+      fd.append('new_password', nw);
+      fetch('../php/employer_dashboard.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+          alert(data.success ? 'Password updated.' : 'Error: ' + data.message);
+          if (data.success) { document.getElementById('f-cur-pass').value = ''; document.getElementById('f-new-pass').value = ''; }
+        })
+        .catch(() => alert('Failed. Please try again.'));
+    }
+  </script>
+</body>
+</html>

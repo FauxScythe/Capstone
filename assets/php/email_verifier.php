@@ -1,5 +1,5 @@
 <?php
-require_once '../email_sender_real.php';
+require_once 'email_sender_real.php';
 
 header('Content-Type: application/json');
 

@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PESO Officer Dashboard – SkillBridge AI</title>
+  <link rel="stylesheet" href="../css/peso_officer.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">▲</span>
+      <span class="brand-name">SkillBridge AI</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#" id="nav-dashboard"  class="nav-link active" onclick="showPage('dashboard',this)">Dashboard</a></li>
+      <li><a href="#" id="nav-seekers"    class="nav-link" onclick="showPage('seekers',this)">Job Seekers</a></li>
+      <li><a href="#" id="nav-employers"  class="nav-link" onclick="showPage('employers',this)">Employers</a></li>
+      <li><a href="#" id="nav-interviews" class="nav-link" onclick="showPage('interviews',this)">Interviews</a></li>
+    </ul>
+    <div class="nav-user">
+      <div class="nav-role-select">
+        <span class="role-label" id="officer-position">Employment Officer</span>
+      </div>
+      <div class="nav-avatar">
+        <i class="fa-solid fa-user" style="font-size:14px;"></i>
+      </div>
+      <span id="officer-name" style="font-size:14px;font-weight:600;margin-left:4px;"></span>
+      <a href="#" onclick="doLogout(event)" class="nav-logout" title="Logout">
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </a>
+    </div>
+  </nav>
+
+  <main class="main-content">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="po-page active">
+      <div class="page-header">
+        <h1 class="page-title" id="page-title">Employment Office Dashboard</h1>
+      </div>
+      <div class="stat-cards-row">
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--blue"><i class="fa-solid fa-users" style="font-size:20px;"></i></div>
+          <div class="stat-info"><span class="stat-label">Total Job Seekers</span><span class="stat-value" id="stat-total-seekers">—</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--orange"><i class="fa-solid fa-wheelchair" style="font-size:20px;"></i></div>
+          <div class="stat-info"><span class="stat-label">PWD Job Seekers</span><span class="stat-value" id="stat-pwd-seekers">—</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--green"><i class="fa-solid fa-building" style="font-size:20px;"></i></div>
+          <div class="stat-info"><span class="stat-label">Registered Employers</span><span class="stat-value" id="stat-total-employers">—</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--teal"><i class="fa-solid fa-briefcase" style="font-size:20px;"></i></div>
+          <div class="stat-info"><span class="stat-label">Active Vacancies</span><span class="stat-value" id="stat-vacancies">—</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon stat-icon--purple"><i class="fa-solid fa-file-lines" style="font-size:20px;"></i></div>
+          <div class="stat-info"><span class="stat-label">Total Applications</span><span class="stat-value" id="stat-applications">—</span></div>
+        </div>
+      </div>
+      <div class="dashboard-grid">
+        <div class="col-left">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Recent Job Seekers</h2></div>
+            <div id="recent-seekers-list" class="approval-list">
+              <div class="po-empty"><i class="fa-regular fa-user"></i><p>No job seekers yet</p></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-center">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Employer Activity</h2></div>
+            <table class="activity-table">
+              <thead><tr><th>Company</th><th>Industry</th><th>Vacancies</th><th>PWD Friendly</th></tr></thead>
+              <tbody id="employer-activity-tbody">
+                <tr><td colspan="4" style="text-align:center;padding:20px;color:#9ca3af;">No employers yet</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="col-right">
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Quick Actions</h2></div>
+            <div class="quick-actions">
+              <button class="qa-btn" onclick="showPage('seekers',document.getElementById('nav-seekers'))">
+                <i class="fa-solid fa-users"></i> View All Job Seekers
+              </button>
+              <button class="qa-btn" onclick="showPage('employers',document.getElementById('nav-employers'))">
+                <i class="fa-solid fa-building"></i> View All Employers
+              </button>
+              <button class="qa-btn" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Print Report
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h2 class="card-title">Officer Info</h2></div>
+            <div class="officer-info-card">
+              <div class="officer-avatar"><i class="fa-solid fa-user-tie"></i></div>
+              <div>
+                <div id="info-name"     style="font-weight:700;font-size:.95rem;"></div>
+                <div id="info-position" style="font-size:.8rem;color:#6b7280;margin-top:2px;"></div>
+                <div id="info-office"   style="font-size:.8rem;color:#6b7280;"></div>
+                <div id="info-email"    style="font-size:.8rem;color:#3b82f6;margin-top:4px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /dashboard-grid -->
+
+      <!-- ── Analytics Row ──────────────────────────────────────────── -->
+      <div class="analytics-row">
+
+        <!-- Successful Placements -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-trophy" style="color:#22c55e;margin-right:6px;"></i> Successful Job Placements</h2>
+          </div>
+          <div class="placement-summary">
+            <div class="placement-big"><span id="ana-total-hired">—</span><small>Total Hired</small></div>
+            <div class="placement-big"><span id="ana-pwd-hired">—</span><small>PWD Hired</small></div>
+            <div class="placement-big"><span id="ana-placement-rate">—%</span><small>Placement Rate</small></div>
+          </div>
+          <div id="placements-by-industry" class="industry-bars"></div>
+        </div>
+
+        <!-- Monthly Trend -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-chart-line" style="color:#3b82f6;margin-right:6px;"></i> Monthly Employment Trend</h2>
+          </div>
+          <div class="chart-legend-row">
+            <span class="cleg cleg--blue"></span><span>Applications</span>
+            <span class="cleg cleg--green" style="margin-left:14px;"></span><span>Hired</span>
+          </div>
+          <canvas id="trend-chart" height="160"></canvas>
+        </div>
+
+        <!-- AI Match Rate -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-robot" style="color:#8b5cf6;margin-right:6px;"></i> AI Match Success Rate</h2>
+          </div>
+          <div class="match-rate-center">
+            <div class="match-donut-wrap">
+              <canvas id="match-donut" width="160" height="160"></canvas>
+              <div class="match-donut-label">
+                <span id="match-pct">—</span>
+                <small>hired</small>
+              </div>
+            </div>
+          </div>
+          <div id="match-breakdown" class="match-breakdown"></div>
+        </div>
+
+      </div><!-- /analytics-row -->
+
+      <!-- ── AI Intelligence Row ────────────────────────────────────── -->
+      <div class="analytics-row ai-row">
+
+        <!-- Top Matched Candidates per Job -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-users-gear" style="color:#3b82f6;margin-right:6px;"></i> Top Matched Candidates per Job</h2>
+          </div>
+          <div class="ai-filter-row">
+            <select id="top-match-job-select" class="po-select" style="flex:1;" onchange="renderTopMatches()">
+              <option value="">Select a Job Posting</option>
+            </select>
+          </div>
+          <div id="top-matches-list" class="top-matches-list">
+            <p class="ai-empty">Select a job to see top matched candidates.</p>
+          </div>
+        </div>
+
+        <!-- Skill Gap Analysis -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-chart-bar" style="color:#f97316;margin-right:6px;"></i> Skill Gap Analysis</h2>
+          </div>
+          <p style="font-size:12px;color:var(--text-secondary);margin-bottom:10px;">Most demanded skills vs. skills jobseekers have</p>
+          <div id="skill-gap-list" class="skill-gap-list">
+            <p class="ai-empty">Loading...</p>
+          </div>
+        </div>
+
+        <!-- Recommended Jobs Summary + AI Confidence -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:#8b5cf6;margin-right:6px;"></i> Recommended Jobs & AI Confidence</h2>
+          </div>
+          <div id="recommended-jobs-list" class="recommended-list">
+            <p class="ai-empty">Loading...</p>
+          </div>
+        </div>
+
+      </div><!-- /ai-row -->
+
+      <!-- ── User Activity Row ──────────────────────────────────────── -->
+      <div class="analytics-row">
+
+        <!-- Active vs Inactive Users + Role Distribution -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-circle-half-stroke" style="color:#3b82f6;margin-right:6px;"></i> Active vs Inactive Users</h2>
+          </div>
+          <div class="active-inactive-wrap">
+            <div class="ai-half ai-half--active">
+              <span id="ua-active">—</span>
+              <small>Active <span style="font-size:10px;color:#9ca3af;">(applied in 30d)</span></small>
+            </div>
+            <div class="ai-half ai-half--inactive">
+              <span id="ua-inactive">—</span>
+              <small>Inactive</small>
+            </div>
+          </div>
+          <div class="ua-bar-track">
+            <div id="ua-active-bar" class="ua-bar-fill" style="width:0%"></div>
+          </div>
+          <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:4px;" id="ua-pct-label"></p>
+
+          <div class="card-header" style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border-color);">
+            <h2 class="card-title"><i class="fa-solid fa-chart-pie" style="color:#8b5cf6;margin-right:6px;"></i> Role-Based User Distribution</h2>
+          </div>
+          <div class="role-dist-wrap">
+            <canvas id="role-dist-chart" width="130" height="130"></canvas>
+            <div id="role-dist-legend" class="role-dist-legend"></div>
+          </div>
+        </div>
+
+        <!-- Employer Participation Rate -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-handshake" style="color:#22c55e;margin-right:6px;"></i> Employer Participation Rate</h2>
+          </div>
+          <div id="employer-participation" class="emp-part-list"></div>
+        </div>
+
+        <!-- Recently Registered Users -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-user-plus" style="color:#f97316;margin-right:6px;"></i> Recently Registered Users</h2>
+          </div>
+          <div id="recently-registered" class="recent-reg-list"></div>
+        </div>
+
+      </div><!-- /user-activity-row -->
+
+      <!-- ── Interview & Application Row ───────────────────────────── -->
+      <div class="analytics-row">
+
+        <!-- Interview Completion Rate + No-show Tracking -->
+        <div class="card analytics-card">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-calendar-check" style="color:#3b82f6;margin-right:6px;"></i> Interview Completion & No-show</h2>
+          </div>
+          <div class="interview-stats-grid">
+            <div class="istat-box istat--blue">
+              <span id="istat-total">—</span><small>Total Scheduled</small>
+            </div>
+            <div class="istat-box istat--green">
+              <span id="istat-completed">—</span><small>Completed</small>
+            </div>
+            <div class="istat-box istat--red">
+              <span id="istat-noshow">—</span><small>No-show</small>
+            </div>
+            <div class="istat-box istat--purple">
+              <span id="istat-rate">—%</span><small>Completion Rate</small>
+            </div>
+          </div>
+          <p style="font-size:12px;color:var(--text-muted);margin-top:10px;text-align:center;">
+            Interview tracking will populate once interviews are scheduled.
+          </p>
+        </div>
+
+        <!-- Application Status Breakdown -->
+        <div class="card analytics-card" style="grid-column:span 2;">
+          <div class="card-header">
+            <h2 class="card-title"><i class="fa-solid fa-layer-group" style="color:#f59e0b;margin-right:6px;"></i> Application Status Breakdown</h2>
+          </div>
+          <div class="app-breakdown-wrap">
+            <canvas id="app-status-chart" height="140"></canvas>
+            <div id="app-status-legend" class="app-status-legend"></div>
+          </div>
+        </div>
+
+      </div><!-- /interview-app-row -->
+
+    </div><!-- /page-dashboard -->
+
+    <!-- JOB SEEKERS -->
+    <div id="page-seekers" class="po-page">
+      <div class="page-header"><h1 class="page-title">Job Seekers</h1></div>
+      <div class="card">
+        <div class="card-header" style="flex-wrap:wrap;gap:10px;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <input type="text" id="seeker-search" class="po-input" placeholder="Search name or email..." oninput="filterSeekers()" />
+            <select id="seeker-filter-resume" class="po-select" onchange="filterSeekers()">
+              <option value="">All Resume Status</option>
+              <option value="pending">Resume Pending</option>
+              <option value="approved">Resume Approved</option>
+              <option value="rejected">Resume Rejected</option>
+            </select>
+            <select id="seeker-filter-pwd" class="po-select" onchange="filterSeekers()">
+              <option value="">All Types</option>
+              <option value="1">PWD Only</option>
+              <option value="0">Non-PWD Only</option>
+            </select>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="activity-table">
+            <thead>
+              <tr><th>#</th><th>Name</th><th>Email</th><th>Mobile</th><th>PWD</th><th>Resume</th><th>Resume Status</th><th>Registered</th></tr>
+            </thead>
+            <tbody id="seekers-tbody">
+              <tr><td colspan="8" style="text-align:center;padding:24px;color:#9ca3af;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPLOYERS -->
+    <div id="page-employers" class="po-page">
+      <div class="page-header"><h1 class="page-title">Employers</h1></div>
+      <div class="card">
+        <div class="card-header">
+          <input type="text" id="employer-search" class="po-input" placeholder="Search company or email..." oninput="filterEmployers()" />
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="activity-table">
+            <thead>
+              <tr><th>#</th><th>Company</th><th>Industry</th><th>Contact Person</th><th>Email</th><th>Phone</th><th>Inclusive Hiring</th><th>Registered</th></tr>
+            </thead>
+            <tbody id="employers-tbody">
+              <tr><td colspan="8" style="text-align:center;padding:24px;color:#9ca3af;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTERVIEWS -->
+    <div id="page-interviews" class="po-page">
+      <div class="page-header"><h1 class="page-title">Interviews</h1></div>
+      <div class="card">
+        <div class="po-empty" style="padding:40px;">
+          <i class="fa-regular fa-calendar" style="font-size:2rem;color:#9ca3af;"></i>
+          <p style="margin-top:10px;color:#6b7280;">No interviews scheduled yet.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Resume Review Modal -->
+  <div id="resume-modal" class="po-modal-backdrop" onclick="if(event.target===this)closeResumeModal()">
+    <div class="po-modal-box">
+      <button class="po-modal-close" onclick="closeResumeModal()">✕</button>
+      <div class="resume-modal-header">
+        <div class="resume-modal-avatar"><i class="fa-solid fa-user-tie"></i></div>
+        <div>
+          <h2 id="rm-name" style="font-size:1.1rem;font-weight:800;"></h2>
+          <p id="rm-email" style="font-size:12px;color:#6b7280;"></p>
+        </div>
+        <span id="rm-resume-badge" class="id-badge" style="margin-left:auto;"></span>
+      </div>
+      <div class="resume-section-block">
+        <div class="resume-block-title"><i class="fa-solid fa-user"></i> Personal</div>
+        <div class="resume-grid-2">
+          <div class="resume-field"><span>Mobile</span><span id="rm-mobile"></span></div>
+          <div class="resume-field"><span>Date of Birth</span><span id="rm-dob"></span></div>
+          <div class="resume-field"><span>Sex</span><span id="rm-sex"></span></div>
+          <div class="resume-field"><span>Civil Status</span><span id="rm-civil"></span></div>
+          <div class="resume-field full"><span>Address</span><span id="rm-address"></span></div>
+        </div>
+      </div>
+      <div class="resume-section-block">
+        <div class="resume-block-title"><i class="fa-solid fa-graduation-cap"></i> Education</div>
+        <div class="resume-grid-2">
+          <div class="resume-field"><span>Highest Education</span><span id="rm-education"></span></div>
+          <div class="resume-field"><span>Course / Strand</span><span id="rm-course"></span></div>
+        </div>
+      </div>
+      <div class="resume-section-block">
+        <div class="resume-block-title"><i class="fa-solid fa-briefcase"></i> Work Experience</div>
+        <p id="rm-experience" style="font-size:13px;color:#374151;line-height:1.7;white-space:pre-line;"></p>
+      </div>
+      <div class="resume-section-block">
+        <div class="resume-block-title"><i class="fa-solid fa-screwdriver-wrench"></i> Skills</div>
+        <div id="rm-skills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+      </div>
+      <div class="resume-section-block" id="rm-pwd-section" style="display:none;">
+        <div class="resume-block-title"><i class="fa-solid fa-wheelchair"></i> Disability & Accessibility</div>
+        <div class="resume-grid-2">
+          <div class="resume-field"><span>Disability Type</span><span id="rm-disability"></span></div>
+          <div class="resume-field"><span>Accessibility Needs</span><span id="rm-accessibility"></span></div>
+        </div>
+      </div>
+      <div class="po-modal-actions">
+        <button class="tag-btn tag-btn--green" style="padding:9px 20px;font-size:13px;" onclick="updateResumeStatus('approved')">
+          <i class="fa-solid fa-circle-check"></i> Approve Resume
+        </button>
+        <button class="tag-btn tag-btn--outline" style="padding:9px 20px;font-size:13px;color:#c0392b;border-color:#fca5a5;" onclick="updateResumeStatus('rejected')">
+          <i class="fa-solid fa-circle-xmark"></i> Reject Resume
+        </button>
+        <button class="tag-btn tag-btn--outline" style="padding:9px 20px;font-size:13px;" onclick="closeResumeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Navigation ────────────────────────────────────────────────────────────
+    function showPage(id, el) {
+      document.querySelectorAll('.po-page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      const navEl = el || document.getElementById('nav-' + id);
+      if (navEl) navEl.classList.add('active');
+      if (id === 'seekers'   && !window._seekersLoaded)   loadSeekers();
+      if (id === 'employers' && !window._employersLoaded) loadEmployers();
+    }
+
+    function doLogout(e) {
+      e.preventDefault();
+      if (confirm('Are you sure you want to logout?')) window.location.href = '../php/logout.php';
+    }
+
+    // ── Dashboard data ────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('../php/peso_officer_dashboard.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success) {
+          if (data.message && data.message.includes('log in')) window.location.href = 'login.html';
+          return;
+        }
+        const u = data.user, s = data.stats || {};
+        document.getElementById('officer-name').textContent     = u.name     || '';
+        document.getElementById('officer-position').textContent = u.position || 'Employment Officer';
+        document.getElementById('page-title').textContent       = 'Welcome, ' + (u.name || 'Officer');
+        document.getElementById('info-name').textContent        = u.name     || '';
+        document.getElementById('info-position').textContent    = u.position || '';
+        document.getElementById('info-office').textContent      = u.office   || '';
+        document.getElementById('info-email').textContent       = u.email    || '';
+
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? '0'; };
+        set('stat-total-seekers',   s.total_seekers);
+        set('stat-pwd-seekers',     s.pwd_seekers);
+        set('stat-total-employers', s.total_employers);
+        set('stat-vacancies',       s.total_postings);
+        set('stat-applications',    s.total_applications);
+
+        if (s.recent_seekers && s.recent_seekers.length) {
+          document.getElementById('recent-seekers-list').innerHTML = s.recent_seekers.map(sk => `
+            <div class="approval-row">
+              <div class="avatar-placeholder"><i class="fa-solid fa-user" style="font-size:14px;"></i></div>
+              <div class="approval-info">
+                <span class="approval-name">${new Date(sk.created_at).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</span>
+                <span class="approval-role">${sk.first_name} ${sk.last_name} ${sk.is_pwd==1?'<span class="pwd-tag">PWD</span>':''}</span>
+              </div>
+              <span class="id-badge id-badge--verified">verified</span>
+            </div>`).join('');
+        }
+
+        if (s.employers && s.employers.length) {
+          document.getElementById('employer-activity-tbody').innerHTML = s.employers.map(e => `
+            <tr>
+              <td><strong>${e.company_name}</strong></td>
+              <td>${e.industry || '—'}</td>
+              <td>${e.vacancy_count || 0}</td>
+              <td>${e.inclusive_hiring === 'yes' ? '<span class="pwd-tag">Yes</span>' : e.inclusive_hiring || '—'}</td>
+            </tr>`).join('');
+        }
+
+        // ── Analytics ─────────────────────────────────────────────────────
+        renderPlacements(s);
+        renderTrendChart(s.monthly_trend || []);
+        renderMatchRate(s.match_rate || {});
+        renderTopMatchesSetup(s.top_matches || []);
+        renderSkillGap(s.skill_gap || []);
+        renderRecommendedJobs(s.recommended_jobs || []);
+        renderActiveInactive(s);
+        renderRoleDistribution(s.role_distribution || []);
+        renderEmployerParticipation(s.employer_participation || []);
+        renderRecentlyRegistered(s.recently_registered || []);
+        renderAppStatusBreakdown(s.app_status_breakdown || {});
+        renderInterviewStats(s.interview_stats || {});
+      })
+      .catch(err => console.error('Dashboard error:', err));
+    });
+
+    // ── Analytics ─────────────────────────────────────────────────────────────
+    function renderPlacements(s) {
+      document.getElementById('ana-total-hired').textContent = s.total_hired ?? 0;
+      document.getElementById('ana-pwd-hired').textContent   = s.pwd_hired   ?? 0;
+      const total = s.total_applications || 0;
+      const hired = s.total_hired || 0;
+      const rate  = total > 0 ? Math.round((hired / total) * 100) : 0;
+      document.getElementById('ana-placement-rate').textContent = rate + '%';
+
+      const industries = s.placements_by_industry || [];
+      const maxVal = industries.reduce((m, i) => Math.max(m, i.hired_count), 1);
+      document.getElementById('placements-by-industry').innerHTML = industries.length
+        ? industries.map(i => `
+            <div class="ind-bar-row">
+              <span class="ind-label">${i.industry || 'Others'}</span>
+              <div class="ind-track">
+                <div class="ind-fill" style="width:${Math.round((i.hired_count/maxVal)*100)}%"></div>
+              </div>
+              <span class="ind-count">${i.hired_count}</span>
+            </div>`).join('')
+        : '<p style="font-size:13px;color:#9ca3af;text-align:center;padding:12px 0;">No placements yet.</p>';
+    }
+
+    function renderTrendChart(trend) {
+      const ctx = document.getElementById('trend-chart');
+      if (!ctx) return;
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: trend.map(t => t.month),
+          datasets: [
+            {
+              label: 'Applications',
+              data: trend.map(t => t.applications),
+              backgroundColor: 'rgba(59,130,246,0.7)',
+              borderRadius: 4
+            },
+            {
+              label: 'Hired',
+              data: trend.map(t => t.hired),
+              backgroundColor: 'rgba(34,197,94,0.8)',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+            y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: 'rgba(0,0,0,.05)' } }
+          }
+        }
+      });
+    }
+
+    function renderMatchRate(m) {
+      const total    = parseInt(m.total)    || 0;
+      const hired    = parseInt(m.hired)    || 0;
+      const rejected = parseInt(m.rejected) || 0;
+      const interview= parseInt(m.interview)|| 0;
+      const reviewed = parseInt(m.reviewed) || 0;
+      const pending  = parseInt(m.pending)  || 0;
+      const pct = total > 0 ? Math.round((hired / total) * 100) : 0;
+      document.getElementById('match-pct').textContent = pct + '%';
+
+      const ctx = document.getElementById('match-donut');
+      if (ctx) {
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ['Hired', 'Interview', 'Reviewed', 'Pending', 'Rejected'],
+            datasets: [{
+              data: [hired, interview, reviewed, pending, rejected],
+              backgroundColor: ['#22c55e','#8b5cf6','#3b82f6','#f59e0b','#ef4444'],
+              borderWidth: 2,
+              borderColor: '#fff'
+            }]
+          },
+          options: {
+            cutout: '68%',
+            plugins: { legend: { display: false }, tooltip: { callbacks: {
+              label: ctx => ` ${ctx.label}: ${ctx.raw}`
+            }}}
+          }
+        });
+      }
+
+      const colors = { Hired:'#22c55e', Interview:'#8b5cf6', Reviewed:'#3b82f6', Pending:'#f59e0b', Rejected:'#ef4444' };
+      const rows = [['Hired',hired],['Interview',interview],['Reviewed',reviewed],['Pending',pending],['Rejected',rejected]];
+      document.getElementById('match-breakdown').innerHTML = rows.map(([label, val]) => `
+        <div class="match-row">
+          <span class="match-dot" style="background:${colors[label]};"></span>
+          <span class="match-label">${label}</span>
+          <span class="match-val">${val}</span>
+          <span class="match-pct-small">${total>0?Math.round((val/total)*100):0}%</span>
+        </div>`).join('');
+    }
+
+    // ── Top Matched Candidates per Job ───────────────────────────────────────
+    let _topMatchData = [];
+    function renderTopMatchesSetup(data) {
+      _topMatchData = data;
+      const sel = document.getElementById('top-match-job-select');
+      if (!data.length) { sel.innerHTML = '<option>No active jobs</option>'; return; }
+      sel.innerHTML = '<option value="">Select a Job Posting</option>' +
+        data.map(j => `<option value="${j.job_id}">${j.title} — ${j.company}</option>`).join('');
+    }
+
+    function renderTopMatches() {
+      const jobId = document.getElementById('top-match-job-select').value;
+      const list  = document.getElementById('top-matches-list');
+      if (!jobId) { list.innerHTML = '<p class="ai-empty">Select a job to see top matched candidates.</p>'; return; }
+      const job = _topMatchData.find(j => String(j.job_id) === String(jobId));
+      if (!job || !job.candidates.length) {
+        list.innerHTML = '<p class="ai-empty">No approved-resume applicants for this job yet.</p>'; return;
+      }
+      list.innerHTML = job.candidates.map((c, i) => `
+        <div class="top-match-row">
+          <span class="top-match-rank">#${i+1}</span>
+          <div class="top-match-info">
+            <span class="top-match-name">${c.name} ${c.is_pwd==1?'<span class="pwd-tag">PWD</span>':''}</span>
+            <span class="top-match-edu">${c.education || '—'}</span>
+          </div>
+          <div class="ai-score-bar-wrap">
+            <div class="ai-score-bar" style="width:${c.score}%"></div>
+          </div>
+          <span class="ai-score-label">${c.score}%</span>
+        </div>`).join('');
+    }
+
+    // ── Skill Gap Analysis ────────────────────────────────────────────────────
+    function renderSkillGap(gaps) {
+      const el = document.getElementById('skill-gap-list');
+      if (!gaps.length) { el.innerHTML = '<p class="ai-empty">No active job postings to analyze.</p>'; return; }
+      const maxDemand = Math.max(...gaps.map(g => g.demand), 1);
+      el.innerHTML = gaps.map(g => {
+        const gap = Math.max(0, g.demand - g.supply);
+        const pct = Math.round((g.supply / g.demand) * 100);
+        const color = pct >= 80 ? '#22c55e' : pct >= 40 ? '#f59e0b' : '#ef4444';
+        return `
+          <div class="gap-row">
+            <span class="gap-skill">${g.skill}</span>
+            <div class="gap-bars">
+              <div class="gap-bar-track">
+                <div class="gap-bar-demand" style="width:${Math.round((g.demand/maxDemand)*100)}%"></div>
+              </div>
+              <div class="gap-bar-track">
+                <div class="gap-bar-supply" style="width:${Math.round((Math.min(g.supply,g.demand)/maxDemand)*100)}%;background:${color}"></div>
+              </div>
+            </div>
+            <span class="gap-badge" style="background:${color}20;color:${color};">${gap > 0 ? '-'+gap+' gap' : 'met'}</span>
+          </div>`;
+      }).join('') + `
+        <div class="gap-legend">
+          <span class="gap-leg gap-leg--demand"></span>Demand
+          <span class="gap-leg gap-leg--supply" style="margin-left:12px;"></span>Supply
+        </div>`;
+    }
+
+    // ── Recommended Jobs + AI Confidence ─────────────────────────────────────
+    function renderRecommendedJobs(jobs) {
+      const el = document.getElementById('recommended-jobs-list');
+      if (!jobs.length) { el.innerHTML = '<p class="ai-empty">No active job postings.</p>'; return; }
+      el.innerHTML = jobs.map(j => {
+        const conf = j.ai_confidence;
+        const color = conf >= 70 ? '#22c55e' : conf >= 40 ? '#f59e0b' : '#ef4444';
+        return `
+          <div class="rec-job-row">
+            <div class="rec-job-info">
+              <span class="rec-job-title">${j.title}</span>
+              <span class="rec-job-company">${j.company_name} · ${j.employment_type}</span>
+              <div class="rec-job-tags">
+                ${j.pwd_friendly==1?'<span class="pwd-tag">PWD</span>':''}
+                <span class="rec-tag">${j.applicant_count} applicant${j.applicant_count!=1?'s':''}</span>
+              </div>
+            </div>
+            <div class="ai-conf-wrap">
+              <svg viewBox="0 0 36 36" class="ai-conf-ring">
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" stroke-width="3"/>
+                <circle cx="18" cy="18" r="15.9" fill="none" stroke="${color}" stroke-width="3"
+                  stroke-dasharray="${conf} ${100-conf}" stroke-dashoffset="25"
+                  stroke-linecap="round"/>
+              </svg>
+              <span class="ai-conf-pct" style="color:${color};">${conf}%</span>
+              <span class="ai-conf-label">AI confidence</span>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    // ── Active vs Inactive ────────────────────────────────────────────────────
+    function renderActiveInactive(s) {
+      const active   = s.active_seekers   || 0;
+      const inactive = s.inactive_seekers || 0;
+      const total    = active + inactive || 1;
+      const pct      = Math.round((active / total) * 100);
+      document.getElementById('ua-active').textContent   = active;
+      document.getElementById('ua-inactive').textContent = inactive;
+      document.getElementById('ua-active-bar').style.width = pct + '%';
+      document.getElementById('ua-pct-label').textContent  = pct + '% active in last 30 days';
+    }
+
+    // ── Role Distribution ─────────────────────────────────────────────────────
+    function renderRoleDistribution(roles) {
+      const ctx = document.getElementById('role-dist-chart');
+      if (!ctx) return;
+      const colors = ['#3b82f6','#22c55e','#f97316'];
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: roles.map(r => r.role),
+          datasets: [{ data: roles.map(r => r.count), backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }]
+        },
+        options: { cutout: '60%', plugins: { legend: { display: false } } }
+      });
+      const total = roles.reduce((s, r) => s + r.count, 0) || 1;
+      document.getElementById('role-dist-legend').innerHTML = roles.map((r, i) => `
+        <div class="rdl-row">
+          <span class="rdl-dot" style="background:${colors[i]};"></span>
+          <span class="rdl-label">${r.role}</span>
+          <span class="rdl-val">${r.count}</span>
+          <span class="rdl-pct">${Math.round((r.count/total)*100)}%</span>
+        </div>`).join('');
+    }
+
+    // ── Employer Participation ────────────────────────────────────────────────
+    function renderEmployerParticipation(list) {
+      const el = document.getElementById('employer-participation');
+      if (!list.length) { el.innerHTML = '<p class="ai-empty">No employers yet.</p>'; return; }
+      const maxJobs = Math.max(...list.map(e => e.job_count), 1);
+      el.innerHTML = list.map(e => `
+        <div class="emp-part-row">
+          <div class="emp-part-info">
+            <span class="emp-part-name">${e.company_name}</span>
+            <span class="emp-part-industry">${e.industry || '—'}</span>
+          </div>
+          <div class="emp-part-bars">
+            <div class="emp-bar-track">
+              <div class="emp-bar-fill" style="width:${Math.round((e.job_count/maxJobs)*100)}%"></div>
+            </div>
+            <span class="emp-part-stat">${e.job_count} job${e.job_count!=1?'s':''} · ${e.app_count} app${e.app_count!=1?'s':''}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // ── Recently Registered ───────────────────────────────────────────────────
+    function renderRecentlyRegistered(list) {
+      const el = document.getElementById('recently-registered');
+      if (!list.length) { el.innerHTML = '<p class="ai-empty">No registrations yet.</p>'; return; }
+      const roleColor = { 'Job Seeker': '#3b82f6', 'Employer': '#22c55e' };
+      el.innerHTML = list.map(u => `
+        <div class="recent-reg-row">
+          <div class="recent-reg-avatar" style="background:${roleColor[u.role]||'#9ca3af'}20;color:${roleColor[u.role]||'#9ca3af'};">
+            <i class="fa-solid ${u.role==='Employer'?'fa-building':'fa-user'}" style="font-size:13px;"></i>
+          </div>
+          <div class="recent-reg-info">
+            <span class="recent-reg-name">${u.name}</span>
+            <span class="recent-reg-email">${u.email}</span>
+          </div>
+          <div class="recent-reg-right">
+            <span class="recent-reg-role" style="background:${roleColor[u.role]||'#9ca3af'}15;color:${roleColor[u.role]||'#9ca3af'};">${u.role}</span>
+            <span class="recent-reg-date">${new Date(u.created_at).toLocaleDateString('en-PH',{month:'short',day:'numeric'})}</span>
+          </div>
+        </div>`).join('');
+    }
+
+    // ── Application Status Breakdown ──────────────────────────────────────────
+    function renderAppStatusBreakdown(data) {
+      const ctx = document.getElementById('app-status-chart');
+      if (!ctx) return;
+      const labels = ['Pending','Reviewed','Interview','Hired','Rejected'];
+      const values = [data.pending||0, data.reviewed||0, data.interview||0, data.hired||0, data.rejected||0];
+      const colors = ['#f59e0b','#3b82f6','#8b5cf6','#22c55e','#ef4444'];
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{ data: values, backgroundColor: colors, borderRadius: 6 }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+            y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, grid: { color: 'rgba(0,0,0,.05)' } }
+          }
+        }
+      });
+      const total = values.reduce((a, b) => a + b, 0) || 1;
+      document.getElementById('app-status-legend').innerHTML = labels.map((l, i) => `
+        <div class="asl-row">
+          <span class="asl-dot" style="background:${colors[i]};"></span>
+          <span class="asl-label">${l}</span>
+          <span class="asl-val">${values[i]}</span>
+          <span class="asl-pct">${Math.round((values[i]/total)*100)}%</span>
+        </div>`).join('');
+    }
+
+    // ── Interview Stats ───────────────────────────────────────────────────────
+    function renderInterviewStats(data) {
+      const total     = data.total     || 0;
+      const completed = data.completed || 0;
+      const noshow    = data.noshow    || 0;
+      const rate      = total > 0 ? Math.round((completed / total) * 100) : 0;
+      document.getElementById('istat-total').textContent     = total;
+      document.getElementById('istat-completed').textContent = completed;
+      document.getElementById('istat-noshow').textContent    = noshow;
+      document.getElementById('istat-rate').textContent      = rate + '%';
+    }
+
+    // ── Job Seekers ───────────────────────────────────────────────────────────
+    let allSeekers = [], _resumeSeekerId = null;
+
+    function loadSeekers() {
+      window._seekersLoaded = true;
+      const fd = new FormData(); fd.append('action', 'get_seekers');
+      fetch('../php/peso_officer_dashboard.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => { if (data.success) { allSeekers = data.seekers; renderSeekers(allSeekers); } });
+    }
+
+    function resumeStatusBadge(status) {
+      const map = { pending: 'id-badge--pending', approved: 'id-badge--verified', rejected: 'id-badge--rejected' };
+      return `<span class="id-badge ${map[status]||'id-badge--pending'}">${status||'pending'}</span>`;
+    }
+
+    function renderSeekers(list) {
+      const tbody = document.getElementById('seekers-tbody');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:#9ca3af;">No job seekers found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map((s, i) => `
+        <tr>
+          <td>${i+1}</td>
+          <td><strong>${s.first_name} ${s.last_name}</strong>${s.is_pwd==1?' <span class="pwd-tag">PWD</span>':''}</td>
+          <td style="font-size:12px;">${s.email}</td>
+          <td style="font-size:12px;">${s.mobile}</td>
+          <td>${s.is_pwd==1?'<span class="pwd-tag">PWD</span>':'—'}</td>
+          <td>${(s.education||s.skills||s.experience)
+            ? `<button class="tag-btn tag-btn--blue" onclick="openResumeModal(${s.id})"><i class="fa-solid fa-eye"></i> View</button>`
+            : '<span style="font-size:11px;color:#9ca3af;">No resume</span>'}</td>
+          <td id="resume-status-${s.id}">${resumeStatusBadge(s.resume_status)}</td>
+          <td style="font-size:12px;">${new Date(s.created_at).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</td>
+        </tr>`).join('');
+    }
+
+    function filterSeekers() {
+      const q      = document.getElementById('seeker-search').value.toLowerCase();
+      const resume = document.getElementById('seeker-filter-resume').value;
+      const pwd    = document.getElementById('seeker-filter-pwd').value;
+      renderSeekers(allSeekers.filter(s =>
+        (!q      || (s.first_name+' '+s.last_name+s.email).toLowerCase().includes(q)) &&
+        (!resume || (s.resume_status||'pending') === resume) &&
+        (pwd === '' || String(s.is_pwd) === pwd)
+      ));
+    }
+
+    // ── Resume modal ──────────────────────────────────────────────────────────
+    function openResumeModal(seekerId) {
+      _resumeSeekerId = seekerId;
+      const fd = new FormData();
+      fd.append('action', 'get_seeker_resume');
+      fd.append('seeker_id', seekerId);
+      fetch('../php/peso_officer_dashboard.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.success) { alert(data.message); return; }
+          const s = data.seeker;
+          const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || '—'; };
+          set('rm-name',       s.first_name + ' ' + s.last_name);
+          set('rm-email',      s.email);
+          set('rm-mobile',     s.mobile);
+          set('rm-dob',        s.birth_date);
+          set('rm-sex',        s.sex);
+          set('rm-civil',      s.civil_status);
+          set('rm-address',    s.address);
+          set('rm-education',  s.education);
+          set('rm-course',     s.course);
+          set('rm-experience', s.experience || 'No work experience listed.');
+          document.getElementById('rm-skills').innerHTML = s.skills
+            ? s.skills.split(',').map(sk => `<span class="skill-chip">${sk.trim()}</span>`).join('')
+            : '<span style="color:#9ca3af;font-size:13px;">No skills listed.</span>';
+          const pwdSec = document.getElementById('rm-pwd-section');
+          if (s.is_pwd == 1) {
+            pwdSec.style.display = 'block';
+            set('rm-disability',    s.disability_type);
+            set('rm-accessibility', s.accessibility_needs);
+          } else { pwdSec.style.display = 'none'; }
+          const rs = s.resume_status || 'pending';
+          const badge = document.getElementById('rm-resume-badge');
+          badge.className = 'id-badge ' + (rs==='approved'?'id-badge--verified':rs==='rejected'?'id-badge--rejected':'id-badge--pending');
+          badge.textContent = rs;
+          document.getElementById('resume-modal').style.display = 'flex';
+        });
+    }
+
+    function closeResumeModal() {
+      document.getElementById('resume-modal').style.display = 'none';
+      _resumeSeekerId = null;
+    }
+
+    function updateResumeStatus(status) {
+      if (!_resumeSeekerId) return;
+      const fd = new FormData();
+      fd.append('action', 'update_resume_status');
+      fd.append('seeker_id', _resumeSeekerId);
+      fd.append('status', status);
+      fetch('../php/peso_officer_dashboard.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            const badge = document.getElementById('rm-resume-badge');
+            badge.className = 'id-badge ' + (status==='approved'?'id-badge--verified':'id-badge--rejected');
+            badge.textContent = status;
+            const cell = document.getElementById('resume-status-' + _resumeSeekerId);
+            if (cell) cell.innerHTML = resumeStatusBadge(status);
+            const sk = allSeekers.find(s => s.id == _resumeSeekerId);
+            if (sk) sk.resume_status = status;
+          } else alert(data.message);
+        });
+    }
+
+    // ── Employers ─────────────────────────────────────────────────────────────
+    let allEmployers = [];
+
+    function loadEmployers() {
+      window._employersLoaded = true;
+      const fd = new FormData(); fd.append('action', 'get_employers');
+      fetch('../php/peso_officer_dashboard.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => { if (data.success) { allEmployers = data.employers; renderEmployers(allEmployers); } });
+    }
+
+    function renderEmployers(list) {
+      const tbody = document.getElementById('employers-tbody');
+      if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:#9ca3af;">No employers found.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = list.map((e, i) => `
+        <tr>
+          <td>${i+1}</td>
+          <td><strong>${e.company_name}</strong></td>
+          <td>${e.industry || '—'}</td>
+          <td>${e.contact_person || '—'}</td>
+          <td style="font-size:12px;">${e.contact_email}</td>
+          <td style="font-size:12px;">${e.contact_number}</td>
+          <td>${e.inclusive_hiring === 'yes' ? '<span class="pwd-tag">Yes</span>' : e.inclusive_hiring || '—'}</td>
+          <td style="font-size:12px;">${new Date(e.created_at).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</td>
+        </tr>`).join('');
+    }
+
+    function filterEmployers() {
+      const q = document.getElementById('employer-search').value.toLowerCase();
+      renderEmployers(allEmployers.filter(e => !q || (e.company_name+e.contact_email).toLowerCase().includes(q)));
+    }
+  </script>
+</body>
+</html>

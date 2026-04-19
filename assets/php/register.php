@@ -181,8 +181,8 @@ if ($role === 'jobseeker') {
 
     $stmt = mysqli_prepare($conn,
         "INSERT INTO jobseekers (first_name, last_name, middle_name, birth_date, sex, civil_status, address, mobile, email,
-         education, course, skills, experience, is_pwd, disability_type, pwd_id, accessibility_needs, id_file_path, id_image_hash, password)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+         education, course, skills, experience, is_pwd, disability_type, pwd_id, accessibility_needs, id_file_path, id_image_hash, id_verification, password)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'verified',?)"
     );
     // Types: first_name(s) last_name(s) middle_name(s) dob(s) sex(s) civil_status(s) address(s) mobile(s) email(s)
     //        education(s) course(s) skills(s) experience(s) is_pwd(i) disability_type(s) pwd_id(s) accessibility(s)
@@ -275,8 +275,8 @@ if ($role === 'jobseeker') {
     $hashed = password_hash($password, PASSWORD_DEFAULT);
 
     $stmt = mysqli_prepare($conn,
-        "INSERT INTO employers (company_name, industry, company_size, business_address, contact_name, position,
-         contact_number, contact_email, inclusive_hiring, accessibility_features, business_file_path, password)
+        "INSERT INTO employers (company_name, industry, company_size, business_address, contact_person, position,
+         contact_number, contact_email, inclusive_hiring, accessibility_features, business_permit, password)
          VALUES (?,?,?,?,?,?,?,?,?,?,?,?)"
     );
     mysqli_stmt_bind_param($stmt, 'ssssssssssss',

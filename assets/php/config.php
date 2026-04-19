@@ -1,12 +1,20 @@
 <?php
+// phpMyAdmin (XAMPP) database configuration
 $host = "localhost";
-$user = "root";
+$username = "root";
 $password = "";
 $database = "capstone";
 
-$conn = mysqli_connect($host, $user, $password, $database);
+// Create connection
+$conn = new mysqli($host, $username, $password, $database);
 
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+// Check connection
+if ($conn->connect_error) {
+    error_log("Database connection failed: " . $conn->connect_error);
+    error_log("Host: $host, User: $username, DB: $database");
+    die("Database connection failed. Please check your credentials.");
 }
+
+// Set charset to utf8mb4
+$conn->set_charset("utf8mb4");
 ?>

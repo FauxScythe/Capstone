@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login – SkillBridge AI | PESO Bago City</title>
-  <link rel="stylesheet" href="../assets/css/login.css" />
+  <link rel="stylesheet" href="../css/login.css" />
 </head>
 <body>
 
   <div class="login-left">
     <div class="login-left-inner">
       <div class="login-brand">
-        <img src="logo-peso.png" alt="PESO Logo" class="login-logo" />
+        <img src="../images/logo-peso.png" alt="PESO Logo" class="login-logo" />
         <div>
           <div class="login-brand-name">SkillBridge AI</div>
           <div class="login-brand-sub">PESO Bago City · Inclusive Job Matching Platform</div>
@@ -50,9 +50,9 @@
         </div>
       </div>
       <div class="login-logos">
-        <img src="logo-peso.png"           alt="PESO"         />
-        <img src="bagocitylogo.png"        alt="City of Bago" />
-        <img src="DOLE Logo New_Black.png" alt="DOLE"         />
+        <img src="../images/logo-peso.png"           alt="PESO"         />
+        <img src="../images/bagocitylogo.png"        alt="City of Bago" />
+        <img src="../images/DOLE Logo New_Black.png" alt="DOLE"         />
       </div>
     </div>
   </div>
@@ -106,7 +106,7 @@
 
         <div class="login-divider"><span>or</span></div>
 
-        <a href="register.html" class="btn-register">Create a New Account</a>
+        <a href="/Skillbridge/assets/templates/register.html" class="btn-register">Create a New Account</a>
 
         <div id="login-message" class="login-message" style="display: none;"></div>
 
@@ -116,7 +116,7 @@
         By signing in, you agree to the data privacy policy of PESO Bago City in compliance with the <strong>Data Privacy Act of 2012</strong>.
       </p>
 
-      <a href="../index.html" class="back-home">← Back to PESO Bago City Website</a>
+      <a href="/Skillbridge/assets/templates/index.html" class="back-home">← Back to PESO Bago City Website</a>
 
     </div>
   </div>
@@ -169,7 +169,7 @@
         formData.append('password', password);
         formData.append('role', currentRole);
         
-        const response = await fetch('../assets/php/login.php', {
+        const response = await fetch('/Skillbridge/assets/php/login.php', {
           method: 'POST',
           body: formData
         });
@@ -180,7 +180,7 @@
           showMessage(data.message, 'success');
           // Redirect to dashboard after a short delay
           setTimeout(() => {
-            window.location.href = data.redirect || '../assets/php/dashboard.php';
+            window.location.href = data.redirect || '/Skillbridge/assets/php/dashboard.php';
           }, 1000);
         } else {
           showMessage(data.message, 'error');

@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'config.php';
 
 header('Content-Type: application/json');
@@ -46,19 +47,18 @@ switch ($role) {
     case 'employer':
         $table = 'employers';
         if ($is_email) {
-            $stmt = mysqli_prepare($conn, "SELECT id, company_name, contact_name, contact_email, contact_number, password FROM employers WHERE contact_email = ? LIMIT 1");
+            $stmt = mysqli_prepare($conn, "SELECT id, company_name, contact_person, contact_email, contact_number, password FROM employers WHERE contact_email = ? LIMIT 1");
             mysqli_stmt_bind_param($stmt, 's', $email_or_mobile);
         } else {
-            $stmt = mysqli_prepare($conn, "SELECT id, company_name, contact_name, contact_email, contact_number, password FROM employers WHERE contact_number = ? LIMIT 1");
+            $stmt = mysqli_prepare($conn, "SELECT id, company_name, contact_person, contact_email, contact_number, password FROM employers WHERE contact_number = ? LIMIT 1");
             mysqli_stmt_bind_param($stmt, 's', $email_or_mobile);
         }
         break;
         
     case 'officer':
-        // For PESO officers - you might need to create this table
         $table = 'peso_officers';
-        $stmt = mysqli_prepare($conn, "SELECT id, name, email, mobile, password FROM peso_officers WHERE (email = ? OR mobile = ?) LIMIT 1");
-        mysqli_stmt_bind_param($stmt, 'ss', $email_or_mobile, $email_or_mobile);
+        $stmt = mysqli_prepare($conn, "SELECT id, name, email, password FROM peso_officers WHERE email = ? LIMIT 1");
+        mysqli_stmt_bind_param($stmt, 's', $email_or_mobile);
         break;
         
     default:
@@ -77,9 +77,6 @@ $result = mysqli_stmt_get_result($stmt);
 if ($row = mysqli_fetch_assoc($result)) {
     // Verify password
     if (password_verify($password, $row['password'])) {
-        // Start session
-        session_start();
-        
         // Store user data in session
         $_SESSION['user_id'] = $row['id'];
         $_SESSION['user_role'] = $role;
@@ -95,7 +92,7 @@ if ($row = mysqli_fetch_assoc($result)) {
                 
             case 'employer':
                 $_SESSION['user_name'] = $row['company_name'];
-                $_SESSION['user_contact'] = $row['contact_name'];
+                $_SESSION['user_contact'] = $row['contact_person'];
                 $_SESSION['user_email'] = $row['contact_email'];
                 $_SESSION['user_mobile'] = $row['contact_number'];
                 break;
@@ -103,14 +100,29 @@ if ($row = mysqli_fetch_assoc($result)) {
             case 'officer':
                 $_SESSION['user_name'] = $row['name'];
                 $_SESSION['user_email'] = $row['email'];
-                $_SESSION['user_mobile'] = $row['mobile'];
+                $_SESSION['user_role'] = 'peso_officer'; // normalize role name
                 break;
+        }
+        
+        // Determine redirect URL based on role
+        switch ($role) {
+            case 'jobseeker':
+                $redirect_url = '../templates/jobseeker.html';
+                break;
+            case 'employer':
+                $redirect_url = '../templates/employer.html';
+                break;
+            case 'officer':
+                $redirect_url = '../templates/peso_officer.html';
+                break;
+            default:
+                $redirect_url = '../templates/login.html';
         }
         
         echo json_encode([
             'success' => true, 
             'message' => 'Login successful!',
-            'redirect' => 'dashboard.php',
+            'redirect' => $redirect_url,
             'user' => [
                 'name' => $_SESSION['user_name'],
                 'role' => $role
