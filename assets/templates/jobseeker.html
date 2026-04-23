@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="../css/jobseeker.css" />
 </head>
 <body>
-
   <header class="js-topbar">
     <div class="js-topbar-inner">
       <div class="js-brand">
@@ -44,7 +43,6 @@
       </div>
     </div>
   </header>
-
   <main class="js-main">
     <section id="page-home" class="js-page active">
       <div class="js-hero" id="js-hero">
@@ -59,7 +57,6 @@
         </div>
         <img src="../images/bangon bago.jpg" alt="Hero Background" style="width:100%; height:100%; position:absolute; top:0; left:0; object-fit:cover; object-position:center; z-index:0; opacity:0.35;" />
       </div>
-
       <div class="js-container">
         <div class="js-stats-row">
           <div class="js-stat-card">
@@ -84,7 +81,6 @@
             </div>
           </div>
         </div>
-
         <div class="js-section-header">
           <h2>Recent Activity</h2>
         </div>
@@ -93,7 +89,6 @@
           <p>No applications yet.</p>
           <small>A PESO Employment Officer will endorse you once your profile is verified.</small>
         </div>
-
         <div class="js-trusted-bar">
           <span>In partnership with</span>
           <img src="../images/logo-peso.png" alt="PESO" />
@@ -102,14 +97,11 @@
         </div>
       </div>
     </section>
-
     <section id="page-matching" class="js-page">
       <div class="js-container">
         <div class="js-page-header">
           <h2><i class="fa-solid fa-briefcase"></i> Job Postings</h2>
         </div>
-
-        <!-- Search & filters -->
         <div class="jm-filters">
           <div class="jm-search-wrap">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -127,7 +119,6 @@
             <option value="1">PWD Friendly</option>
           </select>
         </div>
-
         <div id="jm-job-list" class="jm-grid">
           <div class="js-empty-card">
             <i class="fa-solid fa-spinner fa-spin"></i>
@@ -136,7 +127,6 @@
         </div>
       </div>
     </section>
-
     <section id="page-applications" class="js-page">
       <div class="js-container">
         <div class="js-page-header">
@@ -150,7 +140,6 @@
         </div>
       </div>
     </section>
-
     <section id="page-profile" class="js-page">
       <div class="js-container">
         <div class="js-profile-hero">
@@ -165,7 +154,6 @@
             </div>
           </div>
         </div>
-        
         <div class="js-profile-tabs">
           <button class="js-ptab active" onclick="switchTab('personal',this)">
             <i class="fa-solid fa-user"></i> Personal
@@ -177,7 +165,6 @@
             <i class="fa-solid fa-lock"></i> Security
           </button>
         </div>
-
         <div class="js-card" id="tab-personal">
           <h3 class="js-form-title">Personal Information</h3>
           <div class="js-form-grid">
@@ -229,11 +216,10 @@
             <label>Complete Address</label>
             <input id="field-address" type="text" placeholder="Barangay, Bago City, Negros Occidental" autocomplete="off" />
           </div>
-          <button class="js-btn-primary">
+          <button class="js-btn-primary" onclick="saveProfile()">
             <i class="fa-solid fa-floppy-disk"></i> Save Changes
           </button>
         </div>
-
         <div class="js-card hidden" id="tab-education">
           <div class="resume-header-bar">
             <h3 class="js-form-title" style="margin:0;">Resume</h3>
@@ -241,8 +227,6 @@
               <i class="fa-solid fa-print"></i> Print / Download
             </button>
           </div>
-
-          <!-- EDUCATION SECTION -->
           <div class="resume-section">
             <div class="resume-section-label">
               <i class="fa-solid fa-graduation-cap"></i> Education
@@ -252,10 +236,11 @@
                 <label>Highest Education Attained</label>
                 <select id="field-education">
                   <option value="">Select</option>
-                  <option value="Elementary">Elementary</option>
-                  <option value="High School">High School</option>
-                  <option value="Senior High School">Senior High School</option>
-                  <option value="Vocational / TESDA">Vocational / TESDA</option>
+                  <option value="Elementary Graduate">Elementary Graduate</option>
+                  <option value="High School Graduate">High School Graduate</option>
+                  <option value="Senior High School Graduate">Senior High School Graduate</option>
+                  <option value="Vocational / Technical Graduate">Vocational / Technical Graduate</option>
+                  <option value="College Undergraduate">College Undergraduate</option>
                   <option value="College Graduate">College Graduate</option>
                   <option value="Post Graduate">Post Graduate</option>
                 </select>
@@ -266,49 +251,36 @@
               </div>
             </div>
           </div>
-
-          <!-- WORK EXPERIENCE SECTION -->
           <div class="resume-section">
             <div class="resume-section-label">
               <i class="fa-solid fa-briefcase"></i> Work Experience
             </div>
-
-            <!-- First-time worker checkbox -->
             <label class="first-time-check">
               <input type="checkbox" id="field-first-time-worker" onchange="toggleExperience(this)" />
               <span>I am a first-time / fresh worker (no previous work experience)</span>
             </label>
-
             <div id="experience-wrap" class="js-form-group full" style="margin-top:12px;">
               <label>Describe your previous roles, responsibilities, and duration</label>
               <textarea id="field-experience" rows="5" placeholder="e.g. Sales Associate at ABC Store (2021–2023) — handled customer inquiries, managed inventory..."></textarea>
             </div>
           </div>
-
-            <!-- Portfolio & Certificates Upload -->
             <div class="portfolio-upload-area">
               <div class="portfolio-upload-label">
                 <i class="fa-solid fa-images"></i> Portfolio & Certificates
                 <span class="portfolio-hint">JPG, PNG, PDF · max 5MB each · up to 10 files</span>
               </div>
-
               <label class="portfolio-dropzone" id="portfolio-dropzone">
                 <input type="file" id="portfolio-file-input" multiple accept="image/jpeg,image/png,application/pdf" style="display:none" onchange="handlePortfolioFiles(this.files)" />
                 <i class="fa-solid fa-cloud-arrow-up portfolio-drop-icon"></i>
                 <span class="portfolio-drop-text">Drag & drop files here or <u>browse</u></span>
               </label>
-
               <div id="portfolio-preview" class="portfolio-preview-grid"></div>
-
               <div id="portfolio-existing" class="portfolio-existing-grid"></div>
-
               <button class="portfolio-upload-btn" type="button" id="portfolio-upload-btn" onclick="uploadPortfolio()" style="display:none">
                 <i class="fa-solid fa-upload"></i> Upload Files
               </button>
             </div>
           </div>
-
-          <!-- SKILLS SECTION -->
           <div class="resume-section">
             <div class="resume-section-label">
               <i class="fa-solid fa-screwdriver-wrench"></i> Skills
@@ -318,8 +290,6 @@
               <input id="field-skills" type="text" placeholder="e.g. MS Office, Customer Service, Driving, Sign Language" autocomplete="off" />
             </div>
           </div>
-
-          <!-- DISABILITY / ACCESSIBILITY SECTION -->
           <div class="resume-section">
             <div class="resume-section-label">
               <i class="fa-solid fa-universal-access"></i> Disability & Accessibility Needs
@@ -335,12 +305,10 @@
               </div>
             </div>
           </div>
-
           <button class="js-btn-primary" type="button" onclick="saveResume()">
             <i class="fa-solid fa-floppy-disk"></i> Save Resume
           </button>
         </div>
-
         <div class="js-card hidden" id="tab-security">
           <h3 class="js-form-title">Change Password</h3>
           <div class="js-form-group full">
@@ -362,28 +330,23 @@
       </div>
     </section>
   </main>
-
-  <!-- Apply Confirmation Modal -->
   <div id="apply-modal" class="js-modal-backdrop" onclick="if(event.target===this)closeApplyModal()">
     <div class="js-modal-box">
       <button class="js-modal-close" onclick="closeApplyModal()">✕</button>
       <h2 class="js-modal-title"><i class="fa-solid fa-paper-plane"></i> Confirm Application</h2>
       <p style="font-size:13px;color:#666;margin-bottom:16px;">You are applying for:</p>
       <div class="apply-job-info" id="apply-job-info"></div>
-
       <div class="apply-resume-summary">
         <div class="apply-resume-header">
           <i class="fa-solid fa-file-lines"></i> Your Resume Summary
         </div>
         <div class="apply-resume-body" id="apply-resume-body"></div>
       </div>
-
       <div id="apply-incomplete-warning" class="apply-warning" style="display:none;">
         <i class="fa-solid fa-triangle-exclamation"></i>
         Your resume is incomplete. Please fill in your <strong id="apply-missing-fields"></strong> before applying.
         <br><a href="#" onclick="closeApplyModal();showPage('profile',null);setTimeout(()=>switchTab('education',document.querySelectorAll('.js-ptab')[1]),100);return false;" style="color:#c0392b;font-weight:700;">Complete Resume →</a>
       </div>
-
       <div class="js-modal-actions">
         <button class="js-btn-primary" id="apply-confirm-btn" onclick="submitApplication()">
           <i class="fa-solid fa-paper-plane"></i> Submit Application
@@ -392,9 +355,7 @@
       </div>
     </div>
   </div>
-
   <script>
-    // Page navigation
     function showPage(id, el) {
       document.querySelectorAll('.js-page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.js-nav-link').forEach(n => n.classList.remove('active'));
@@ -404,29 +365,19 @@
       if (id === 'matching'     && !window._jobsLoaded)         loadJobs();
       if (id === 'applications' && !window._applicationsLoaded) loadApplications();
     }
-
-    // Tab switching handled in portfolio section below
-
-    // User menu toggle
     function toggleUserMenu() {
       document.getElementById('user-dropdown').classList.toggle('open');
     }
-
-    // Logout
     function logout() {
       if (confirm('Are you sure you want to logout?')) {
         window.location.href = '../php/logout.php';
       }
     }
-
-    // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
       if (!e.target.closest('.js-user-menu') && !e.target.closest('.js-dropdown')) {
         document.getElementById('user-dropdown').classList.remove('open');
       }
     });
-
-    // Fetch user data from backend - wait for DOM to be ready
     document.addEventListener('DOMContentLoaded', function() {
       fetch('../php/jobseeker_dashboard.php', {
         method: 'POST',
@@ -436,23 +387,20 @@
       .then(data => {
         if (data.success) {
           const u = data.user;
-
-          // Header
           const welcomeMsg = document.getElementById('welcome-msg');
           if (welcomeMsg) welcomeMsg.textContent = 'Welcome, ' + u.name;
           const profileName = document.getElementById('profile-fullname');
           if (profileName) profileName.textContent = u.name;
           const profileLoc = document.getElementById('profile-location');
           if (profileLoc && u.address) profileLoc.textContent = u.address;
-
-          // Personal tab
           const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
           const setSelect = (id, val) => {
             const el = document.getElementById(id);
             if (!el || !val) return;
-            for (let opt of el.options) { if (opt.value === val) { opt.selected = true; break; } }
+            for (let opt of el.options) {
+              if (opt.value === val || opt.text === val) { opt.selected = true; break; }
+            }
           };
-
           set('field-first-name',    u.first_name);
           set('field-middle-name',   u.middle_name);
           set('field-last-name',     u.last_name);
@@ -462,13 +410,10 @@
           set('field-address',       u.address);
           setSelect('field-sex',         u.sex);
           setSelect('field-civil-status', u.civil_status);
-
-          // Education tab
           setSelect('field-education', u.education);
           set('field-course',       u.course);
           set('field-skills',       u.skills);
           set('field-experience',   u.experience);
-          // Restore first-time worker checkbox
           const ftw = document.getElementById('field-first-time-worker');
           if (ftw) {
             ftw.checked = (u.first_time_worker == 1);
@@ -476,9 +421,7 @@
           }
           set('field-disability',   u.disability_type);
           set('field-accessibility', u.accessibility_needs);
-          // Store resume status globally for apply validation
           window._resumeStatus = u.resume_status || 'pending';
-
         } else {
           console.error('Dashboard fetch failed:', data.message);
           if (data.message && data.message.includes('log in')) {
@@ -488,11 +431,7 @@
       })
       .catch(err => console.error('Error fetching user data:', err));
     });
-
-    // ── Portfolio Upload ──────────────────────────────────────────────────────
     let portfolioFiles = [];
-
-    // Drag & drop
     const dropzone = document.getElementById('portfolio-dropzone');
     if (dropzone) {
       dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
@@ -503,7 +442,6 @@
         handlePortfolioFiles(e.dataTransfer.files);
       });
     }
-
     function handlePortfolioFiles(files) {
       const allowed = ['image/jpeg','image/png','application/pdf'];
       const maxSize = 5 * 1024 * 1024;
@@ -516,7 +454,6 @@
       renderPortfolioPreviews();
       document.getElementById('portfolio-upload-btn').style.display = portfolioFiles.length ? 'inline-flex' : 'none';
     }
-
     function renderPortfolioPreviews() {
       const grid = document.getElementById('portfolio-preview');
       grid.innerHTML = '';
@@ -536,23 +473,19 @@
         grid.appendChild(card);
       });
     }
-
     function removePortfolioFile(i) {
       portfolioFiles.splice(i, 1);
       renderPortfolioPreviews();
       document.getElementById('portfolio-upload-btn').style.display = portfolioFiles.length ? 'inline-flex' : 'none';
     }
-
     function uploadPortfolio() {
       if (!portfolioFiles.length) return;
       const btn = document.getElementById('portfolio-upload-btn');
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
-
       const fd = new FormData();
       fd.append('action', 'upload_portfolio');
       portfolioFiles.forEach(f => fd.append('portfolio[]', f));
-
       fetch('../php/jobseeker_dashboard.php', { method: 'POST', body: fd })
         .then(r => r.json())
         .then(data => {
@@ -571,7 +504,6 @@
           btn.innerHTML = '<i class="fa-solid fa-upload"></i> Upload Files';
         });
     }
-
     function loadPortfolioFiles() {
       const fd = new FormData();
       fd.append('action', 'get_portfolio');
@@ -594,7 +526,6 @@
           });
         });
     }
-
     function deletePortfolioFile(id, btn) {
       if (!confirm('Delete this file?')) return;
       const fd = new FormData();
@@ -604,8 +535,6 @@
         .then(r => r.json())
         .then(data => { if (data.success) loadPortfolioFiles(); else alert(data.message); });
     }
-
-    // Load existing portfolio when Resume tab is opened
     const origSwitchTab = window.switchTab;
     function switchTab(id, el) {
       document.querySelectorAll('[id^="tab-"]').forEach(p => p.classList.add('hidden'));
@@ -614,10 +543,7 @@
       el.classList.add('active');
       if (id === 'education') loadPortfolioFiles();
     }
-
-    // ── Job Postings ──────────────────────────────────────────────────────────
     let allJobs = [];
-
     function loadJobs() {
       window._jobsLoaded = true;
       const fd = new FormData();
@@ -630,7 +556,6 @@
         })
         .catch(() => renderJobs([]));
     }
-
     function renderJobs(jobs) {
       const list = document.getElementById('jm-job-list');
       if (!jobs.length) {
@@ -659,7 +584,6 @@
           </div>
         </div>`).join('');
     }
-
     function filterJobs() {
       const q    = document.getElementById('jm-search').value.toLowerCase();
       const type = document.getElementById('jm-filter-type').value;
@@ -670,13 +594,9 @@
         (!pwd  || String(j.pwd_friendly) === pwd)
       ));
     }
-
-    // ── Apply modal ───────────────────────────────────────────────────────────
     let _applyJobId = null;
     let _applyBtn   = null;
-
     function applyJob(jobId, btn) {
-      // Block if resume not approved
       if (window._resumeStatus !== 'approved') {
         const msg = window._resumeStatus === 'rejected'
           ? 'Your resume was rejected by the PESO Officer. Please update your resume and resubmit.'
@@ -684,7 +604,6 @@
         alert('⚠️ ' + msg);
         return;
       }
-      // Get resume fields
       const education  = document.getElementById('field-education')?.value  || '';
       const skills     = document.getElementById('field-skills')?.value     || '';
       const experience = document.getElementById('field-experience')?.value || '';
@@ -693,26 +612,18 @@
       const lastName   = document.getElementById('field-last-name')?.value  || '';
       const email      = document.getElementById('field-email')?.value      || '';
       const mobile     = document.getElementById('field-mobile')?.value     || '';
-
-      // Find job info from allJobs
       const job = allJobs.find(j => j.id == jobId) || {};
-
-      // Populate modal job info
       document.getElementById('apply-job-info').innerHTML = `
         <div class="apply-job-card">
           <strong>${job.title || 'Job'}</strong>
           <span>${job.company_name || ''}</span>
           <span class="jm-tag" style="margin-top:4px;">${job.employment_type || ''}</span>
         </div>`;
-
-      // Check missing resume fields
       const missing = [];
       if (!education) missing.push('education');
       if (!skills)    missing.push('skills');
-
       const warning = document.getElementById('apply-incomplete-warning');
       const confirmBtn = document.getElementById('apply-confirm-btn');
-
       if (missing.length) {
         warning.style.display = 'block';
         document.getElementById('apply-missing-fields').textContent = missing.join(' and ');
@@ -723,8 +634,6 @@
         confirmBtn.disabled = false;
         confirmBtn.style.opacity = '1';
       }
-
-      // Populate resume summary
       document.getElementById('apply-resume-body').innerHTML = `
         <div class="resume-row"><span>Name</span><span>${firstName} ${lastName}</span></div>
         <div class="resume-row"><span>Email</span><span>${email}</span></div>
@@ -733,22 +642,18 @@
         ${course ? `<div class="resume-row"><span>Course</span><span>${course}</span></div>` : ''}
         <div class="resume-row"><span>Skills</span><span>${skills || '<em style="color:#c0392b;">Not filled</em>'}</span></div>
         ${experience ? `<div class="resume-row"><span>Experience</span><span>${experience.substring(0,120)}${experience.length>120?'…':''}</span></div>` : ''}`;
-
       _applyJobId = jobId;
       _applyBtn   = btn;
       document.getElementById('apply-modal').style.display = 'flex';
     }
-
     function closeApplyModal() {
       document.getElementById('apply-modal').style.display = 'none';
       _applyJobId = null; _applyBtn = null;
     }
-
     function submitApplication() {
       if (!_applyJobId) return;
       const btn = document.getElementById('apply-confirm-btn');
       btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
-
       const fd = new FormData();
       fd.append('action', 'apply_job');
       fd.append('job_id', _applyJobId);
@@ -765,8 +670,6 @@
         })
         .catch(() => { btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Application'; });
     }
-
-    // ── My Applications ───────────────────────────────────────────────────────
     function loadApplications() {
       window._applicationsLoaded = true;
       const fd = new FormData(); fd.append('action', 'get_applications');
@@ -796,7 +699,6 @@
                 ${a.status.charAt(0).toUpperCase()+a.status.slice(1)}
               </span>
             </div>`).join('')}</div>`;
-          // Update dashboard stat
           const statEl = document.querySelector('.js-stat-number');
           if (statEl) statEl.textContent = data.applications.length;
         })
@@ -805,14 +707,29 @@
             '<div class="js-empty-card"><i class="fa-solid fa-inbox"></i><p>No applications submitted yet.</p></div>';
         });
     }
-
+    function saveProfile() {
+      const fd = new FormData();
+      fd.append('action',       'update_profile');
+      fd.append('first_name',   document.getElementById('field-first-name').value);
+      fd.append('middle_name',  document.getElementById('field-middle-name').value);
+      fd.append('last_name',    document.getElementById('field-last-name').value);
+      fd.append('email',        document.getElementById('field-email').value);
+      fd.append('mobile',       document.getElementById('field-mobile').value);
+      fd.append('birth_date',   document.getElementById('field-dob').value);
+      fd.append('sex',          document.getElementById('field-sex').value);
+      fd.append('civil_status', document.getElementById('field-civil-status').value);
+      fd.append('address',      document.getElementById('field-address').value);
+      fetch('../php/jobseeker_dashboard.php', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => alert(data.success ? 'Profile saved successfully.' : 'Error: ' + data.message))
+        .catch(() => alert('Failed to save. Please try again.'));
+    }
     function toggleExperience(cb) {
       const wrap = document.getElementById('experience-wrap');
       if (!wrap) return;
       wrap.style.display = cb.checked ? 'none' : 'block';
       if (cb.checked) document.getElementById('field-experience').value = '';
     }
-
     function saveResume() {
       const fd = new FormData();
       fd.append('action', 'update_resume');
@@ -823,7 +740,6 @@
       fd.append('disability_type',  document.getElementById('field-disability').value);
       fd.append('accessibility',    document.getElementById('field-accessibility').value);
       fd.append('first_time_worker', document.getElementById('field-first-time-worker').checked ? '1' : '0');
-
       fetch('../php/jobseeker_dashboard.php', { method: 'POST', body: fd })
         .then(r => r.json())
         .then(data => {
@@ -831,7 +747,6 @@
         })
         .catch(() => alert('Failed to save. Please try again.'));
     }
-
     function printResume() {
       const name     = document.getElementById('profile-fullname')?.textContent || '';
       const address  = document.getElementById('field-address')?.value || '';
@@ -845,7 +760,6 @@
       const skills   = document.getElementById('field-skills')?.value || '';
       const disab    = document.getElementById('field-disability')?.value || '';
       const access   = document.getElementById('field-accessibility')?.value || '';
-
       const w = window.open('', '_blank');
       w.document.write(`<!DOCTYPE html><html><head><title>Resume – ${name}</title>
       <style>

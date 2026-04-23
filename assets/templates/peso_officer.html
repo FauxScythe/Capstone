@@ -9,7 +9,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-
   <nav class="navbar">
     <div class="nav-brand">
       <span class="brand-icon">▲</span>
@@ -34,10 +33,7 @@
       </a>
     </div>
   </nav>
-
   <main class="main-content">
-
-    <!-- DASHBOARD -->
     <div id="page-dashboard" class="po-page active">
       <div class="page-header">
         <h1 class="page-title" id="page-title">Employment Office Dashboard</h1>
@@ -112,12 +108,8 @@
             </div>
           </div>
         </div>
-      </div><!-- /dashboard-grid -->
-
-      <!-- ── Analytics Row ──────────────────────────────────────────── -->
+      </div>
       <div class="analytics-row">
-
-        <!-- Successful Placements -->
         <div class="card analytics-card">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-trophy" style="color:#22c55e;margin-right:6px;"></i> Successful Job Placements</h2>
@@ -129,8 +121,6 @@
           </div>
           <div id="placements-by-industry" class="industry-bars"></div>
         </div>
-
-        <!-- Monthly Trend -->
         <div class="card analytics-card">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-chart-line" style="color:#3b82f6;margin-right:6px;"></i> Monthly Employment Trend</h2>
@@ -141,8 +131,6 @@
           </div>
           <canvas id="trend-chart" height="160"></canvas>
         </div>
-
-        <!-- AI Match Rate -->
         <div class="card analytics-card">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-robot" style="color:#8b5cf6;margin-right:6px;"></i> AI Match Success Rate</h2>
@@ -158,13 +146,8 @@
           </div>
           <div id="match-breakdown" class="match-breakdown"></div>
         </div>
-
-      </div><!-- /analytics-row -->
-
-      <!-- ── AI Intelligence Row ────────────────────────────────────── -->
+      </div>
       <div class="analytics-row ai-row">
-
-        <!-- Top Matched Candidates per Job -->
         <div class="card analytics-card">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-users-gear" style="color:#3b82f6;margin-right:6px;"></i> Top Matched Candidates per Job</h2>
@@ -178,8 +161,6 @@
             <p class="ai-empty">Select a job to see top matched candidates.</p>
           </div>
         </div>
-
-        <!-- Skill Gap Analysis -->
         <div class="card analytics-card">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-chart-bar" style="color:#f97316;margin-right:6px;"></i> Skill Gap Analysis</h2>
@@ -189,8 +170,6 @@
             <p class="ai-empty">Loading...</p>
           </div>
         </div>
-
-        <!-- Recommended Jobs Summary + AI Confidence -->
         <div class="card analytics-card">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-wand-magic-sparkles" style="color:#8b5cf6;margin-right:6px;"></i> Recommended Jobs & AI Confidence</h2>
@@ -199,13 +178,8 @@
             <p class="ai-empty">Loading...</p>
           </div>
         </div>
-
-      </div><!-- /ai-row -->
-
-      <!-- ── User Activity Row ──────────────────────────────────────── -->
+      </div>
       <div class="analytics-row">
-
-        <!-- Active vs Inactive Users + Role Distribution -->
         <div class="card analytics-card">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-circle-half-stroke" style="color:#3b82f6;margin-right:6px;"></i> Active vs Inactive Users</h2>
@@ -224,7 +198,6 @@
             <div id="ua-active-bar" class="ua-bar-fill" style="width:0%"></div>
           </div>
           <p style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:4px;" id="ua-pct-label"></p>
-
           <div class="card-header" style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border-color);">
             <h2 class="card-title"><i class="fa-solid fa-chart-pie" style="color:#8b5cf6;margin-right:6px;"></i> Role-Based User Distribution</h2>
           </div>
@@ -233,29 +206,20 @@
             <div id="role-dist-legend" class="role-dist-legend"></div>
           </div>
         </div>
-
-        <!-- Employer Participation Rate -->
         <div class="card analytics-card">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-handshake" style="color:#22c55e;margin-right:6px;"></i> Employer Participation Rate</h2>
           </div>
           <div id="employer-participation" class="emp-part-list"></div>
         </div>
-
-        <!-- Recently Registered Users -->
         <div class="card analytics-card">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-user-plus" style="color:#f97316;margin-right:6px;"></i> Recently Registered Users</h2>
           </div>
           <div id="recently-registered" class="recent-reg-list"></div>
         </div>
-
-      </div><!-- /user-activity-row -->
-
-      <!-- ── Interview & Application Row ───────────────────────────── -->
+      </div>
       <div class="analytics-row">
-
-        <!-- Interview Completion Rate + No-show Tracking -->
         <div class="card analytics-card">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-calendar-check" style="color:#3b82f6;margin-right:6px;"></i> Interview Completion & No-show</h2>
@@ -278,8 +242,6 @@
             Interview tracking will populate once interviews are scheduled.
           </p>
         </div>
-
-        <!-- Application Status Breakdown -->
         <div class="card analytics-card" style="grid-column:span 2;">
           <div class="card-header">
             <h2 class="card-title"><i class="fa-solid fa-layer-group" style="color:#f59e0b;margin-right:6px;"></i> Application Status Breakdown</h2>
@@ -289,12 +251,8 @@
             <div id="app-status-legend" class="app-status-legend"></div>
           </div>
         </div>
-
-      </div><!-- /interview-app-row -->
-
-    </div><!-- /page-dashboard -->
-
-    <!-- JOB SEEKERS -->
+      </div>
+    </div>
     <div id="page-seekers" class="po-page">
       <div class="page-header"><h1 class="page-title">Job Seekers</h1></div>
       <div class="card">
@@ -326,8 +284,6 @@
         </div>
       </div>
     </div>
-
-    <!-- EMPLOYERS -->
     <div id="page-employers" class="po-page">
       <div class="page-header"><h1 class="page-title">Employers</h1></div>
       <div class="card">
@@ -346,8 +302,6 @@
         </div>
       </div>
     </div>
-
-    <!-- INTERVIEWS -->
     <div id="page-interviews" class="po-page">
       <div class="page-header"><h1 class="page-title">Interviews</h1></div>
       <div class="card">
@@ -357,10 +311,7 @@
         </div>
       </div>
     </div>
-
   </main>
-
-  <!-- Resume Review Modal -->
   <div id="resume-modal" class="po-modal-backdrop" onclick="if(event.target===this)closeResumeModal()">
     <div class="po-modal-box">
       <button class="po-modal-close" onclick="closeResumeModal()">✕</button>
@@ -415,9 +366,7 @@
       </div>
     </div>
   </div>
-
   <script>
-    // ── Navigation ────────────────────────────────────────────────────────────
     function showPage(id, el) {
       document.querySelectorAll('.po-page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
@@ -427,13 +376,10 @@
       if (id === 'seekers'   && !window._seekersLoaded)   loadSeekers();
       if (id === 'employers' && !window._employersLoaded) loadEmployers();
     }
-
     function doLogout(e) {
       e.preventDefault();
       if (confirm('Are you sure you want to logout?')) window.location.href = '../php/logout.php';
     }
-
-    // ── Dashboard data ────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
       fetch('../php/peso_officer_dashboard.php', {
         method: 'POST',
@@ -453,14 +399,12 @@
         document.getElementById('info-position').textContent    = u.position || '';
         document.getElementById('info-office').textContent      = u.office   || '';
         document.getElementById('info-email').textContent       = u.email    || '';
-
         const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v ?? '0'; };
         set('stat-total-seekers',   s.total_seekers);
         set('stat-pwd-seekers',     s.pwd_seekers);
         set('stat-total-employers', s.total_employers);
         set('stat-vacancies',       s.total_postings);
         set('stat-applications',    s.total_applications);
-
         if (s.recent_seekers && s.recent_seekers.length) {
           document.getElementById('recent-seekers-list').innerHTML = s.recent_seekers.map(sk => `
             <div class="approval-row">
@@ -472,7 +416,6 @@
               <span class="id-badge id-badge--verified">verified</span>
             </div>`).join('');
         }
-
         if (s.employers && s.employers.length) {
           document.getElementById('employer-activity-tbody').innerHTML = s.employers.map(e => `
             <tr>
@@ -482,8 +425,6 @@
               <td>${e.inclusive_hiring === 'yes' ? '<span class="pwd-tag">Yes</span>' : e.inclusive_hiring || '—'}</td>
             </tr>`).join('');
         }
-
-        // ── Analytics ─────────────────────────────────────────────────────
         renderPlacements(s);
         renderTrendChart(s.monthly_trend || []);
         renderMatchRate(s.match_rate || {});
@@ -499,8 +440,6 @@
       })
       .catch(err => console.error('Dashboard error:', err));
     });
-
-    // ── Analytics ─────────────────────────────────────────────────────────────
     function renderPlacements(s) {
       document.getElementById('ana-total-hired').textContent = s.total_hired ?? 0;
       document.getElementById('ana-pwd-hired').textContent   = s.pwd_hired   ?? 0;
@@ -508,7 +447,6 @@
       const hired = s.total_hired || 0;
       const rate  = total > 0 ? Math.round((hired / total) * 100) : 0;
       document.getElementById('ana-placement-rate').textContent = rate + '%';
-
       const industries = s.placements_by_industry || [];
       const maxVal = industries.reduce((m, i) => Math.max(m, i.hired_count), 1);
       document.getElementById('placements-by-industry').innerHTML = industries.length
@@ -522,7 +460,6 @@
             </div>`).join('')
         : '<p style="font-size:13px;color:#9ca3af;text-align:center;padding:12px 0;">No placements yet.</p>';
     }
-
     function renderTrendChart(trend) {
       const ctx = document.getElementById('trend-chart');
       if (!ctx) return;
@@ -555,7 +492,6 @@
         }
       });
     }
-
     function renderMatchRate(m) {
       const total    = parseInt(m.total)    || 0;
       const hired    = parseInt(m.hired)    || 0;
@@ -565,7 +501,6 @@
       const pending  = parseInt(m.pending)  || 0;
       const pct = total > 0 ? Math.round((hired / total) * 100) : 0;
       document.getElementById('match-pct').textContent = pct + '%';
-
       const ctx = document.getElementById('match-donut');
       if (ctx) {
         new Chart(ctx, {
@@ -587,7 +522,6 @@
           }
         });
       }
-
       const colors = { Hired:'#22c55e', Interview:'#8b5cf6', Reviewed:'#3b82f6', Pending:'#f59e0b', Rejected:'#ef4444' };
       const rows = [['Hired',hired],['Interview',interview],['Reviewed',reviewed],['Pending',pending],['Rejected',rejected]];
       document.getElementById('match-breakdown').innerHTML = rows.map(([label, val]) => `
@@ -598,8 +532,6 @@
           <span class="match-pct-small">${total>0?Math.round((val/total)*100):0}%</span>
         </div>`).join('');
     }
-
-    // ── Top Matched Candidates per Job ───────────────────────────────────────
     let _topMatchData = [];
     function renderTopMatchesSetup(data) {
       _topMatchData = data;
@@ -608,7 +540,6 @@
       sel.innerHTML = '<option value="">Select a Job Posting</option>' +
         data.map(j => `<option value="${j.job_id}">${j.title} — ${j.company}</option>`).join('');
     }
-
     function renderTopMatches() {
       const jobId = document.getElementById('top-match-job-select').value;
       const list  = document.getElementById('top-matches-list');
@@ -630,8 +561,6 @@
           <span class="ai-score-label">${c.score}%</span>
         </div>`).join('');
     }
-
-    // ── Skill Gap Analysis ────────────────────────────────────────────────────
     function renderSkillGap(gaps) {
       const el = document.getElementById('skill-gap-list');
       if (!gaps.length) { el.innerHTML = '<p class="ai-empty">No active job postings to analyze.</p>'; return; }
@@ -659,8 +588,6 @@
           <span class="gap-leg gap-leg--supply" style="margin-left:12px;"></span>Supply
         </div>`;
     }
-
-    // ── Recommended Jobs + AI Confidence ─────────────────────────────────────
     function renderRecommendedJobs(jobs) {
       const el = document.getElementById('recommended-jobs-list');
       if (!jobs.length) { el.innerHTML = '<p class="ai-empty">No active job postings.</p>'; return; }
@@ -690,8 +617,6 @@
           </div>`;
       }).join('');
     }
-
-    // ── Active vs Inactive ────────────────────────────────────────────────────
     function renderActiveInactive(s) {
       const active   = s.active_seekers   || 0;
       const inactive = s.inactive_seekers || 0;
@@ -702,8 +627,6 @@
       document.getElementById('ua-active-bar').style.width = pct + '%';
       document.getElementById('ua-pct-label').textContent  = pct + '% active in last 30 days';
     }
-
-    // ── Role Distribution ─────────────────────────────────────────────────────
     function renderRoleDistribution(roles) {
       const ctx = document.getElementById('role-dist-chart');
       if (!ctx) return;
@@ -725,8 +648,6 @@
           <span class="rdl-pct">${Math.round((r.count/total)*100)}%</span>
         </div>`).join('');
     }
-
-    // ── Employer Participation ────────────────────────────────────────────────
     function renderEmployerParticipation(list) {
       const el = document.getElementById('employer-participation');
       if (!list.length) { el.innerHTML = '<p class="ai-empty">No employers yet.</p>'; return; }
@@ -745,8 +666,6 @@
           </div>
         </div>`).join('');
     }
-
-    // ── Recently Registered ───────────────────────────────────────────────────
     function renderRecentlyRegistered(list) {
       const el = document.getElementById('recently-registered');
       if (!list.length) { el.innerHTML = '<p class="ai-empty">No registrations yet.</p>'; return; }
@@ -766,8 +685,6 @@
           </div>
         </div>`).join('');
     }
-
-    // ── Application Status Breakdown ──────────────────────────────────────────
     function renderAppStatusBreakdown(data) {
       const ctx = document.getElementById('app-status-chart');
       if (!ctx) return;
@@ -798,8 +715,6 @@
           <span class="asl-pct">${Math.round((values[i]/total)*100)}%</span>
         </div>`).join('');
     }
-
-    // ── Interview Stats ───────────────────────────────────────────────────────
     function renderInterviewStats(data) {
       const total     = data.total     || 0;
       const completed = data.completed || 0;
@@ -810,10 +725,7 @@
       document.getElementById('istat-noshow').textContent    = noshow;
       document.getElementById('istat-rate').textContent      = rate + '%';
     }
-
-    // ── Job Seekers ───────────────────────────────────────────────────────────
     let allSeekers = [], _resumeSeekerId = null;
-
     function loadSeekers() {
       window._seekersLoaded = true;
       const fd = new FormData(); fd.append('action', 'get_seekers');
@@ -821,12 +733,10 @@
         .then(r => r.json())
         .then(data => { if (data.success) { allSeekers = data.seekers; renderSeekers(allSeekers); } });
     }
-
     function resumeStatusBadge(status) {
       const map = { pending: 'id-badge--pending', approved: 'id-badge--verified', rejected: 'id-badge--rejected' };
       return `<span class="id-badge ${map[status]||'id-badge--pending'}">${status||'pending'}</span>`;
     }
-
     function renderSeekers(list) {
       const tbody = document.getElementById('seekers-tbody');
       if (!list.length) {
@@ -847,7 +757,6 @@
           <td style="font-size:12px;">${new Date(s.created_at).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</td>
         </tr>`).join('');
     }
-
     function filterSeekers() {
       const q      = document.getElementById('seeker-search').value.toLowerCase();
       const resume = document.getElementById('seeker-filter-resume').value;
@@ -858,8 +767,6 @@
         (pwd === '' || String(s.is_pwd) === pwd)
       ));
     }
-
-    // ── Resume modal ──────────────────────────────────────────────────────────
     function openResumeModal(seekerId) {
       _resumeSeekerId = seekerId;
       const fd = new FormData();
@@ -897,12 +804,10 @@
           document.getElementById('resume-modal').style.display = 'flex';
         });
     }
-
     function closeResumeModal() {
       document.getElementById('resume-modal').style.display = 'none';
       _resumeSeekerId = null;
     }
-
     function updateResumeStatus(status) {
       if (!_resumeSeekerId) return;
       const fd = new FormData();
@@ -923,10 +828,7 @@
           } else alert(data.message);
         });
     }
-
-    // ── Employers ─────────────────────────────────────────────────────────────
     let allEmployers = [];
-
     function loadEmployers() {
       window._employersLoaded = true;
       const fd = new FormData(); fd.append('action', 'get_employers');
@@ -934,7 +836,6 @@
         .then(r => r.json())
         .then(data => { if (data.success) { allEmployers = data.employers; renderEmployers(allEmployers); } });
     }
-
     function renderEmployers(list) {
       const tbody = document.getElementById('employers-tbody');
       if (!list.length) {
@@ -953,11 +854,10 @@
           <td style="font-size:12px;">${new Date(e.created_at).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</td>
         </tr>`).join('');
     }
-
     function filterEmployers() {
       const q = document.getElementById('employer-search').value.toLowerCase();
       renderEmployers(allEmployers.filter(e => !q || (e.company_name+e.contact_email).toLowerCase().includes(q)));
     }
   </script>
 </body>
-</html>
+</html>

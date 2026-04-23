@@ -1,26 +1,18 @@
 <?php
 session_start();
 require_once 'config.php';
-
 header('Content-Type: application/json');
-
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
     exit;
 }
-
 if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'peso_officer') {
     echo json_encode(['success' => false, 'message' => 'Please log in first.']);
     exit;
 }
-
 $user_id = $_SESSION['user_id'];
 $action  = $_POST['action'] ?? '';
-
-// Ensure all registered jobseekers have verified ID (registration already validates via OCR)
 mysqli_query($conn, "UPDATE jobseekers SET id_verification='verified' WHERE id_verification IS NULL OR id_verification='pending'");
-
-// ── Verify seeker ID status ───────────────────────────────────────────────
 if ($action === 'verify_seeker') {
     $seeker_id = (int)($_POST['seeker_id'] ?? 0);
     $status    = $_POST['status'] ?? '';
@@ -34,10 +26,7 @@ if ($action === 'verify_seeker') {
     echo json_encode(['success' => true]);
     exit;
 }
-
-// ── Get all job seekers ───────────────────────────────────────────────────
 if ($action === 'get_seekers') {
-    // Add resume_status column if missing
     $col = mysqli_query($conn, "SHOW COLUMNS FROM jobseekers LIKE 'resume_status'");
     if (mysqli_num_rows($col) === 0) {
         mysqli_query($conn, "ALTER TABLE jobseekers ADD COLUMN resume_status ENUM('pending','approved','rejected') DEFAULT 'pending'");
@@ -52,8 +41,6 @@ if ($action === 'get_seekers') {
     echo json_encode(['success' => true, 'seekers' => mysqli_fetch_all($result, MYSQLI_ASSOC)]);
     exit;
 }
-
-// ── Get single seeker resume ──────────────────────────────────────────────
 if ($action === 'get_seeker_resume') {
     $seeker_id = (int)($_POST['seeker_id'] ?? 0);
     $stmt = mysqli_prepare($conn,
@@ -71,8 +58,6 @@ if ($action === 'get_seeker_resume') {
     echo json_encode(['success' => true, 'seeker' => $row]);
     exit;
 }
-
-// ── Update resume status ──────────────────────────────────────────────────
 if ($action === 'update_resume_status') {
     $seeker_id = (int)($_POST['seeker_id'] ?? 0);
     $status    = $_POST['status'] ?? '';
@@ -86,8 +71,6 @@ if ($action === 'update_resume_status') {
     echo json_encode(['success' => true]);
     exit;
 }
-
-// ── Get all employers ─────────────────────────────────────────────────────
 if ($action === 'get_employers') {
     $result = mysqli_query($conn,
         "SELECT id, company_name, industry,
@@ -98,22 +81,16 @@ if ($action === 'get_employers') {
     echo json_encode(['success' => true, 'employers' => mysqli_fetch_all($result, MYSQLI_ASSOC)]);
     exit;
 }
-
-// ── Default: fetch officer + dashboard stats ──────────────────────────────
 $stmt = mysqli_prepare($conn, "SELECT name, email, office, position FROM peso_officers WHERE id=?");
 mysqli_stmt_bind_param($stmt, 'i', $user_id);
 mysqli_stmt_execute($stmt);
 $officer = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 mysqli_stmt_close($stmt);
-
 if (!$officer) { echo json_encode(['success' => false, 'message' => 'Officer not found.']); exit; }
-
-// Stats
 $q = function($sql) use ($conn) {
     $r = mysqli_query($conn, $sql);
     return $r ? (int)mysqli_fetch_assoc($r)['c'] : 0;
 };
-
 $stats = [
     'total_seekers'      => $q("SELECT COUNT(*) as c FROM jobseekers"),
     'pwd_seekers'        => $q("SELECT COUNT(*) as c FROM jobseekers WHERE is_pwd=1"),
@@ -123,8 +100,6 @@ $stats = [
     'total_hired'        => $q("SELECT COUNT(*) as c FROM job_applications WHERE status='hired'"),
     'pwd_hired'          => $q("SELECT COUNT(*) as c FROM job_applications ja JOIN jobseekers js ON js.id=ja.jobseeker_id WHERE ja.status='hired' AND js.is_pwd=1"),
 ];
-
-// ── Monthly employment trend (last 6 months) ──────────────────────────────
 $trend = [];
 for ($i = 5; $i >= 0; $i--) {
     $month_label = date('M Y', strtotime("-$i months"));
@@ -135,9 +110,6 @@ for ($i = 5; $i >= 0; $i--) {
     $trend[] = ['month' => $month_label, 'applications' => $apps, 'hired' => $hired];
 }
 $stats['monthly_trend'] = $trend;
-
-// ── AI job match success rate ─────────────────────────────────────────────
-// Match rate = hired / total applications (per job, averaged)
 $match_r = mysqli_query($conn,
     "SELECT
         COUNT(*) as total,
@@ -150,8 +122,6 @@ $match_r = mysqli_query($conn,
 );
 $match_data = mysqli_fetch_assoc($match_r) ?: ['total'=>0,'hired'=>0,'rejected'=>0,'interview'=>0,'reviewed'=>0,'pending'=>0];
 $stats['match_rate'] = $match_data;
-
-// ── Successful placements by industry ────────────────────────────────────
 $ind_r = mysqli_query($conn,
     "SELECT e.industry, COUNT(ja.id) as hired_count
      FROM job_applications ja
@@ -161,8 +131,6 @@ $ind_r = mysqli_query($conn,
      GROUP BY e.industry ORDER BY hired_count DESC LIMIT 6"
 );
 $stats['placements_by_industry'] = mysqli_fetch_all($ind_r, MYSQLI_ASSOC);
-
-// ── Top matched candidates per job (applicants with resume approved, ordered by skill overlap) ──
 $jobs_r = mysqli_query($conn,
     "SELECT jp.id, jp.title, jp.required_skills, e.company_name
      FROM job_postings jp JOIN employers e ON e.id=jp.employer_id
@@ -189,9 +157,6 @@ foreach ($jobs_list as $job) {
     $top_matches[] = ['job_id' => $job['id'], 'title' => $job['title'], 'company' => $job['company_name'], 'candidates' => array_slice($candidates, 0, 5)];
 }
 $stats['top_matches'] = $top_matches;
-
-// ── Skill gap analysis ────────────────────────────────────────────────────
-// Demanded: skills from active job postings
 $demanded_raw = mysqli_query($conn, "SELECT required_skills FROM job_postings WHERE status='active'");
 $demanded_count = [];
 while ($row = mysqli_fetch_assoc($demanded_raw)) {
@@ -201,8 +166,6 @@ while ($row = mysqli_fetch_assoc($demanded_raw)) {
 }
 arsort($demanded_count);
 $top_demanded = array_slice($demanded_count, 0, 8, true);
-
-// Available: skills jobseekers have
 $available_raw = mysqli_query($conn, "SELECT skills FROM jobseekers WHERE skills IS NOT NULL AND skills != ''");
 $available_count = [];
 while ($row = mysqli_fetch_assoc($available_raw)) {
@@ -215,8 +178,6 @@ foreach ($top_demanded as $skill => $demand) {
     $skill_gap[] = ['skill' => $skill, 'demand' => $demand, 'supply' => $available_count[$skill] ?? 0];
 }
 $stats['skill_gap'] = $skill_gap;
-
-// ── Recommended jobs summary with AI confidence ───────────────────────────
 $rec_r = mysqli_query($conn,
     "SELECT jp.id, jp.title, jp.required_skills, jp.employment_type, jp.pwd_friendly,
             e.company_name,
@@ -232,26 +193,19 @@ $recommended = [];
 while ($row = mysqli_fetch_assoc($rec_r)) {
     $apps = (int)$row['applicant_count'];
     $hired = (int)$row['hired_count'];
-    // AI confidence: based on applicant volume + hire rate
     $confidence = min(100, round(($apps * 5) + ($apps > 0 ? ($hired/$apps)*50 : 0)));
     $row['ai_confidence'] = $confidence;
     $recommended[] = $row;
 }
 $stats['recommended_jobs'] = $recommended;
-
-// ── Active vs Inactive users (active = applied in last 30 days) ───────────
 $active_seekers = $q("SELECT COUNT(DISTINCT jobseeker_id) as c FROM job_applications WHERE applied_date >= DATE_SUB(NOW(), INTERVAL 30 DAY)");
 $stats['active_seekers']   = $active_seekers;
 $stats['inactive_seekers'] = max(0, $stats['total_seekers'] - $active_seekers);
-
-// ── Role-based distribution ───────────────────────────────────────────────
 $stats['role_distribution'] = [
     ['role' => 'Job Seekers', 'count' => $stats['total_seekers']],
     ['role' => 'Employers',   'count' => $stats['total_employers']],
     ['role' => 'PESO Officers','count' => $q("SELECT COUNT(*) as c FROM peso_officers")],
 ];
-
-// ── Employer participation rate ───────────────────────────────────────────
 $emp_part_r = mysqli_query($conn,
     "SELECT e.company_name, e.industry,
             COUNT(DISTINCT jp.id) as job_count,
@@ -262,8 +216,6 @@ $emp_part_r = mysqli_query($conn,
      GROUP BY e.id ORDER BY job_count DESC, app_count DESC LIMIT 8"
 );
 $stats['employer_participation'] = mysqli_fetch_all($emp_part_r, MYSQLI_ASSOC);
-
-// ── Recently registered users (last 10, both seekers and employers) ───────
 $recent_reg_r = mysqli_query($conn,
     "SELECT first_name AS name, email, 'Job Seeker' AS role, created_at FROM jobseekers
      UNION ALL
@@ -271,34 +223,24 @@ $recent_reg_r = mysqli_query($conn,
      ORDER BY created_at DESC LIMIT 10"
 );
 $stats['recently_registered'] = mysqli_fetch_all($recent_reg_r, MYSQLI_ASSOC);
-
-// ── Application status breakdown ──────────────────────────────────────────
 $app_status_r = mysqli_query($conn,
     "SELECT status, COUNT(*) as c FROM job_applications GROUP BY status"
 );
 $app_status = ['pending'=>0,'reviewed'=>0,'interview'=>0,'hired'=>0,'rejected'=>0];
 while ($row = mysqli_fetch_assoc($app_status_r)) $app_status[$row['status']] = (int)$row['c'];
 $stats['app_status_breakdown'] = $app_status;
-
-// ── Interview stats (placeholder — interviews table not yet populated) ────
 $stats['interview_stats'] = ['total'=>0,'completed'=>0,'noshow'=>0];
-
-// Pending verifications (up to 5)
 $r = mysqli_query($conn,
     "SELECT id, first_name, last_name, email FROM jobseekers
      WHERE id_verification='pending' ORDER BY created_at DESC LIMIT 5"
 );
 $stats['pending_seekers'] = mysqli_fetch_all($r, MYSQLI_ASSOC);
-
-// Recent seekers (up to 5)
 $r = mysqli_query($conn,
     "SELECT id, first_name, last_name, is_pwd,
             id_verification as id_verification_status, created_at
      FROM jobseekers ORDER BY created_at DESC LIMIT 5"
 );
 $stats['recent_seekers'] = mysqli_fetch_all($r, MYSQLI_ASSOC);
-
-// Employer activity (up to 8)
 $r = mysqli_query($conn,
     "SELECT e.company_name, e.industry, e.inclusive_hiring,
             COUNT(j.id) as vacancy_count
@@ -307,6 +249,5 @@ $r = mysqli_query($conn,
      GROUP BY e.id ORDER BY e.created_at DESC LIMIT 8"
 );
 $stats['employers'] = mysqli_fetch_all($r, MYSQLI_ASSOC);
-
 echo json_encode(['success' => true, 'user' => $officer, 'stats' => $stats]);
 ?>
